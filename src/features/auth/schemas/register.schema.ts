@@ -17,12 +17,13 @@ export const registerSchema = z.object({
     .regex(/[a-z]/, 'A senha deve conter pelo menos uma letra minúscula.')
     .regex(/[0-9]/, 'A senha deve conter pelo menos um número.')
     .regex(/[^A-Za-z0-9]/, 'A senha deve conter pelo menos um caractere especial.'),
+  documentType: z.enum(['CRM', 'CRMV']),
   professionalDocument: z
     .string()
-    .min(1, 'CRM é obrigatório.')
-    .max(50, 'CRM excede o limite de 50 caracteres.')
-    .regex(/\d/, 'O CRM deve conter números.')
-    .regex(/[A-Za-z]{2}/, 'O CRM deve conter a UF (ex: SP).'),
+    .min(1, 'Documento profissional é obrigatório.')
+    .max(50, 'Documento profissional excede o limite de 50 caracteres.')
+    .regex(/\d/, 'O documento deve conter números.')
+    .regex(/[A-Za-z]{2}/, 'O documento deve conter a UF (ex: SP).'),
   acceptTerms: z.boolean().refine((value) => value === true, 'Você deve aceitar os termos de uso.'),
 });
 

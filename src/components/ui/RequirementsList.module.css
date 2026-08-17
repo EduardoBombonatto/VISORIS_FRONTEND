@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin: 0;
+  margin: 4px 0 0;
   padding: 0;
 }
 
@@ -11,12 +11,12 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 11px;
   color: #ef4444;
   transition: color 0.2s;
 }
 
-.item[data-met="true"] {
+.item[data-met='true'] {
   color: var(--color-primary);
 }
 
@@ -26,7 +26,7 @@
   justify-content: center;
   width: 16px;
   height: 16px;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   border-radius: 4px;
   border: 1px solid currentColor;

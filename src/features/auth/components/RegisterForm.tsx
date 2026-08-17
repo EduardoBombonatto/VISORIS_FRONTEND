@@ -34,12 +34,14 @@ export default function RegisterForm() {
       fullName: '',
       email: '',
       password: '',
+      documentType: 'CRM',
       professionalDocument: '',
       acceptTerms: false,
     },
   });
 
   const password = useWatch({ control, name: 'password' }) ?? '';
+  const documentType = useWatch({ control, name: 'documentType' });
   const professionalDocument = useWatch({ control, name: 'professionalDocument' }) ?? '';
 
   const passwordRequirements: RequirementItem[] = [
@@ -85,7 +87,7 @@ export default function RegisterForm() {
         fullName: values.fullName,
         email: values.email,
         password: values.password,
-        professionalDocument: values.professionalDocument,
+        professionalDocument: `${values.documentType}/${values.professionalDocument}`,
       },
     });
   };
@@ -108,14 +110,28 @@ export default function RegisterForm() {
         />
 
         <div className={styles.row}>
-          <Input
-            label="CRM"
-            type="text"
-            placeholder="00000-SP"
-            autoComplete="off"
-            error={errors.professionalDocument?.message}
-            {...register('professionalDocument')}
-          />
+          <div className={styles.documentRow}>
+            <div className={styles.documentInput}>
+              <Input
+                label={documentType}
+                type="text"
+                placeholder="00000-SP"
+                autoComplete="off"
+                error={errors.professionalDocument?.message}
+                {...register('professionalDocument')}
+              />
+            </div>
+            <div className={styles.segmented} role="radiogroup" aria-label="Tipo de documento">
+              <label className={styles.segment}>
+                <input type="radio" value="CRM" {...register('documentType')} />
+                <span>CRM</span>
+              </label>
+              <label className={styles.segment}>
+                <input type="radio" value="CRMV" {...register('documentType')} />
+                <span>CRMV</span>
+              </label>
+            </div>
+          </div>
           <RequirementsList items={crmRequirements} />
         </div>
 

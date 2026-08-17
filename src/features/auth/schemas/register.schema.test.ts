@@ -5,7 +5,8 @@ const valid = {
   fullName: 'Dr. João Silva',
   email: 'dr@clinica.com.br',
   password: 'Senha@123',
-  professionalDocument: 'CRM/SP 123456',
+  documentType: 'CRM',
+  professionalDocument: '123456-SP',
   acceptTerms: true,
 };
 
@@ -30,16 +31,22 @@ describe('registerSchema', () => {
     expect(registerSchema.safeParse({ ...valid, professionalDocument: '' }).success).toBe(false);
   });
 
-  it('rejeita CRM sem números', () => {
-    expect(registerSchema.safeParse({ ...valid, professionalDocument: 'CRM/SP' }).success).toBe(
+  it('rejeita documento sem números', () => {
+    expect(registerSchema.safeParse({ ...valid, professionalDocument: 'SP' }).success).toBe(false);
+  });
+
+  it('rejeita documento sem UF', () => {
+    expect(registerSchema.safeParse({ ...valid, professionalDocument: '123456' }).success).toBe(
       false,
     );
   });
 
-  it('rejeita CRM sem UF', () => {
-    expect(registerSchema.safeParse({ ...valid, professionalDocument: '123456' }).success).toBe(
-      false,
-    );
+  it('rejeita tipo de documento inválido', () => {
+    expect(registerSchema.safeParse({ ...valid, documentType: 'CRM-V' }).success).toBe(false);
+  });
+
+  it('aceita CRMV como tipo de documento', () => {
+    expect(registerSchema.safeParse({ ...valid, documentType: 'CRMV' }).success).toBe(true);
   });
 
   it('rejeita quando termos não são aceitos', () => {
