@@ -1,0 +1,56 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.doctorName {
+  font-size: var(--font-body-bold);
+  line-height: 32px;
+  color: var(--color-text-primary);
+}
+
+.clinicName {
+  font-size: var(--font-body-small);
+  line-height: 24px;
+  color: var(--color-text-secondary);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.switch,
+.logout {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  padding: 8px 16px;
+  font-size: var(--font-body-small);
+  line-height: 24px;
+  cursor: pointer;
+  color: var(--color-text-primary);
+}
+
+.switch:hover,
+.logout:hover {
+  border-color: var(--color-primary);
+}
+
+.logout {
+  color: #dc2626;
+}
