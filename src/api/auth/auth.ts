@@ -8,17 +8,26 @@
  * 1. `POST /api/v1/auth/register` ou `POST /api/v1/auth/login` → recebe os cookies `baseToken` e `refreshToken`.
  * 2. `POST /api/v1/auth/workspace` com o `baseToken` + `refreshToken` → recebe o `accessToken` e um novo `refreshToken`.
  * 3. `POST /api/v1/auth/refresh` com o `refreshToken` → renova `accessToken` e `refreshToken`.
+ * 4. `POST /api/v1/auth/logout` com o `refreshToken` → revoga o token e limpa os cookies de sessão.
  *
  * Todos os tokens são transportados exclusivamente via cookies. Para testar no Swagger UI,
  * faça login/registro e copie os valores dos cookies de resposta para a seção Authorize.
  * OpenAPI spec version: 0.0.1-SNAPSHOT
  */
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
 } from '@tanstack/react-query';
 
 import type {
@@ -26,6 +35,11 @@ import type {
   AuthLogin400,
   AuthLogin401,
   AuthLogin500,
+  AuthLogout200,
+  AuthLogout500,
+  AuthMe200,
+  AuthMe401,
+  AuthMe500,
   AuthRefresh200,
   AuthRefresh401,
   AuthRefresh500,
@@ -46,6 +60,21 @@ import type {
 import { customInstance } from '../../lib/axios';
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
+  const result = { queryKey } as T & { queryKey: K };
+  for (const key of Object.keys(query)) {
+    // The explicit queryKey always wins, matching the previous
+    // `{ ...query, queryKey }` spread where it was set last.
+    if (key === 'queryKey') continue;
+    Object.defineProperty(result, key, {
+      enumerable: true,
+      configurable: true,
+      get: () => (query as Record<string, unknown>)[key],
+    });
+  }
+  return result;
+};
 
 export type authLoginResponse200 = {
   data: AuthLogin200;
@@ -510,4 +539,217 @@ export const useAuthSelectWorkspace = <
   TContext
 > => {
   return useMutation(getAuthSelectWorkspaceMutationOptions(options), queryClient);
+};
+export type authMeResponse200 = {
+  data: AuthMe200;
+  status: 200;
+};
+
+export type authMeResponse401 = {
+  data: AuthMe401;
+  status: 401;
+};
+
+export type authMeResponse500 = {
+  data: AuthMe500;
+  status: 500;
+};
+
+export type authMeResponseSuccess = authMeResponse200 & {
+  headers: Headers;
+};
+export type authMeResponseError = (authMeResponse401 | authMeResponse500) & {
+  headers: Headers;
+};
+
+export type authMeResponse = authMeResponseSuccess | authMeResponseError;
+
+export const getAuthMeUrl = () => {
+  return `/api/v1/auth/me`;
+};
+
+/**
+ * Retorna o usuário autenticado e seus workspaces a partir dos cookies.
+ * Se o `accessToken` for válido, a sessão é retornada diretamente. Caso contrário,
+ * tenta rotacionar a sessão usando o `refreshToken` (emitindo novos cookies `accessToken`
+ * e `refreshToken`) antes de retornar os dados.
+ * @summary Restaura a sessão do usuário autenticado.
+ */
+export const authMe = async (
+  options?: Parameters<typeof customInstance>[1],
+): Promise<authMeResponse> => {
+  return customInstance<authMeResponse>(getAuthMeUrl(), {
+    ...options,
+    method: 'GET',
+  });
+};
+
+export const getAuthMeQueryKey = () => {
+  return [`/api/v1/auth/me`] as const;
+};
+
+export const getAuthMeQueryOptions = <
+  TData = Awaited<ReturnType<typeof authMe>>,
+  TError = AuthMe401 | AuthMe500,
+>(options?: {
+  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authMe>>, TError, TData>>;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAuthMeQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof authMe>>> = ({ signal }) =>
+    authMe({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof authMe>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AuthMeQueryResult = NonNullable<Awaited<ReturnType<typeof authMe>>>;
+export type AuthMeQueryError = AuthMe401 | AuthMe500;
+
+export function useAuthMe<
+  TData = Awaited<ReturnType<typeof authMe>>,
+  TError = AuthMe401 | AuthMe500,
+>(
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof authMe>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authMe>>,
+          TError,
+          Awaited<ReturnType<typeof authMe>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAuthMe<
+  TData = Awaited<ReturnType<typeof authMe>>,
+  TError = AuthMe401 | AuthMe500,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authMe>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authMe>>,
+          TError,
+          Awaited<ReturnType<typeof authMe>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAuthMe<
+  TData = Awaited<ReturnType<typeof authMe>>,
+  TError = AuthMe401 | AuthMe500,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authMe>>, TError, TData>>;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Restaura a sessão do usuário autenticado.
+ */
+
+export function useAuthMe<
+  TData = Awaited<ReturnType<typeof authMe>>,
+  TError = AuthMe401 | AuthMe500,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authMe>>, TError, TData>>;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAuthMeQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type authLogoutResponse200 = {
+  data: AuthLogout200;
+  status: 200;
+};
+
+export type authLogoutResponse500 = {
+  data: AuthLogout500;
+  status: 500;
+};
+
+export type authLogoutResponseSuccess = authLogoutResponse200 & {
+  headers: Headers;
+};
+export type authLogoutResponseError = authLogoutResponse500 & {
+  headers: Headers;
+};
+
+export type authLogoutResponse = authLogoutResponseSuccess | authLogoutResponseError;
+
+export const getAuthLogoutUrl = () => {
+  return `/api/v1/auth/logout`;
+};
+
+/**
+ * Revoga o `refreshToken` recebido via cookie e limpa os cookies `accessToken`, `refreshToken`
+ * e `baseToken` (Max-Age=0). Não possui corpo de requisição e é idempotente: cookies ausentes,
+ * desconhecidos ou já revogados ainda retornam 200.
+ * @summary Encerra a sessão atual e limpa os cookies de sessão.
+ */
+export const authLogout = async (
+  options?: Parameters<typeof customInstance>[1],
+): Promise<authLogoutResponse> => {
+  return customInstance<authLogoutResponse>(getAuthLogoutUrl(), {
+    ...options,
+    method: 'POST',
+  });
+};
+
+export const getAuthLogoutMutationOptions = <TError = AuthLogout500, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<Awaited<ReturnType<typeof authLogout>>, TError, void, TContext>;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<Awaited<ReturnType<typeof authLogout>>, TError, void, TContext> => {
+  const mutationKey = ['authLogout'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof authLogout>>, void> = () => {
+    return authLogout(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AuthLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof authLogout>>>;
+
+export type AuthLogoutMutationError = AuthLogout500;
+
+/**
+ * @summary Encerra a sessão atual e limpa os cookies de sessão.
+ */
+export const useAuthLogout = <TError = AuthLogout500, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof authLogout>>, TError, void, TContext>;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<Awaited<ReturnType<typeof authLogout>>, TError, void, TContext> => {
+  return useMutation(getAuthLogoutMutationOptions(options), queryClient);
 };

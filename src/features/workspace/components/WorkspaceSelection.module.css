@@ -53,8 +53,41 @@
   opacity: 0.6;
 }
 
+.cardActive {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 6%, var(--color-surface));
+}
+
 .cardName {
   font-size: var(--font-body-bold);
   line-height: 32px;
   color: var(--color-text-primary);
+}
+
+.badge {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+.backButton {
+  margin-top: 8px;
+  padding: 10px 24px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.backButton:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }

@@ -8,6 +8,7 @@ import { useAuthSelectWorkspace } from '@/api/auth/auth';
 import type { AuthSelectWorkspace200 } from '@/api/index.schemas';
 import { fetchSession } from '@/features/auth/api/session';
 import { resolvePostAuthRoute } from '@/features/auth/utils/route-guard';
+import { clearSessionCookie } from '@/lib/session-cookie';
 import AppShell from '@/features/auth/components/AppShell';
 import styles from './layout.module.css';
 
@@ -46,6 +47,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         setSession(envelope.data.user, envelope.data.workspaces);
       })
       .catch(() => {
+        clearSessionCookie();
         router.replace('/auth');
       });
   }, [user, setSession, router]);

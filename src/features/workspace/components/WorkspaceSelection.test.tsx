@@ -77,4 +77,53 @@ describe('WorkspaceSelection', () => {
     expect(await screen.findByText('Serviço indisponível.')).toBeInTheDocument();
     expect(replaceMock).not.toHaveBeenCalled();
   });
+
+  it('marca a clínica ativa como "Atual"', () => {
+    useAuthStore.setState({
+      user: { id: '1', fullName: 'Dra. Maria Souza', professionalDocument: null },
+      workspaces: [
+        { clinicId: '10', name: 'Clínica A', role: 'DOCTOR' },
+        { clinicId: '20', name: 'Clínica B', role: 'OWNER' },
+      ],
+      activeWorkspace: { clinicId: '20', name: 'Clínica B', role: 'OWNER' },
+    });
+
+    render(<WorkspaceSelection />);
+
+    expect(screen.getByText('Atual')).toBeInTheDocument();
+    expect(screen.getByText('Clínica B').closest('button')).toHaveClass(/cardActive/);
+  });
+
+  it('clicar na clínica ativa volta ao painel sem chamar a mutação', () => {
+    useAuthStore.setState({
+      user: { id: '1', fullName: 'Dra. Maria Souza', professionalDocument: null },
+      workspaces: [
+        { clinicId: '10', name: 'Clínica A', role: 'DOCTOR' },
+        { clinicId: '20', name: 'Clínica B', role: 'OWNER' },
+      ],
+      activeWorkspace: { clinicId: '20', name: 'Clínica B', role: 'OWNER' },
+    });
+
+    render(<WorkspaceSelection />);
+    fireEvent.click(screen.getByText('Clínica B'));
+
+    expect(mutate).not.toHaveBeenCalled();
+    expect(replaceMock).toHaveBeenCalledWith('/dashboard');
+  });
+
+  it('exibe botão de voltar ao painel quando há clínica ativa', () => {
+    useAuthStore.setState({
+      user: { id: '1', fullName: 'Dra. Maria Souza', professionalDocument: null },
+      workspaces: [
+        { clinicId: '10', name: 'Clínica A', role: 'DOCTOR' },
+        { clinicId: '20', name: 'Clínica B', role: 'OWNER' },
+      ],
+      activeWorkspace: { clinicId: '20', name: 'Clínica B', role: 'OWNER' },
+    });
+
+    render(<WorkspaceSelection />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Voltar ao painel' }));
+    expect(replaceMock).toHaveBeenCalledWith('/dashboard');
+  });
 });

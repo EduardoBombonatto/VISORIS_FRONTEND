@@ -8,6 +8,7 @@
  * 1. `POST /api/v1/auth/register` ou `POST /api/v1/auth/login` → recebe os cookies `baseToken` e `refreshToken`.
  * 2. `POST /api/v1/auth/workspace` com o `baseToken` + `refreshToken` → recebe o `accessToken` e um novo `refreshToken`.
  * 3. `POST /api/v1/auth/refresh` com o `refreshToken` → renova `accessToken` e `refreshToken`.
+ * 4. `POST /api/v1/auth/logout` com o `refreshToken` → revoga o token e limpa os cookies de sessão.
  *
  * Todos os tokens são transportados exclusivamente via cookies. Para testar no Swagger UI,
  * faça login/registro e copie os valores dos cookies de resposta para a seção Authorize.
@@ -295,6 +296,70 @@ export type AuthSelectWorkspace500 = {
   message: string;
   /** @nullable */
   data: AuthSelectWorkspace500Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type AuthMe200 = {
+  erro: boolean;
+  message: string;
+  data: LoginResponse;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type AuthMe401Data = { [key: string]: unknown } | null;
+
+export type AuthMe401 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: AuthMe401Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type AuthMe500Data = { [key: string]: unknown } | null;
+
+export type AuthMe500 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: AuthMe500Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type AuthLogout200Data = { [key: string]: unknown } | null;
+
+export type AuthLogout200 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: AuthLogout200Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type AuthLogout500Data = { [key: string]: unknown } | null;
+
+export type AuthLogout500 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: AuthLogout500Data;
   httpcode: number;
   timestamp: string;
 };

@@ -9,7 +9,16 @@ export type AuthMe200 = {
   timestamp: string;
 };
 
-export async function fetchSession(): Promise<AuthMe200> {
-  const res = await customInstance<{ data: AuthMe200 }>('/api/v1/auth/me', { method: 'GET' });
-  return res.data;
+let inflightSession: Promise<AuthMe200> | null = null;
+
+export function fetchSession(): Promise<AuthMe200> {
+  if (inflightSession) return inflightSession;
+
+  inflightSession = customInstance<{ data: AuthMe200 }>('/api/v1/auth/me', { method: 'GET' })
+    .then((res) => res.data)
+    .finally(() => {
+      inflightSession = null;
+    });
+
+  return inflightSession;
 }

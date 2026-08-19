@@ -13,6 +13,7 @@ import type { AuthLogin200 } from '@/api/index.schemas';
 import { ApiError } from '@/lib/axios';
 import { useAuthStore } from '@/store/auth-store';
 import { getPostAuthDestination } from '../utils/post-auth';
+import { setSessionCookie } from '@/lib/session-cookie';
 import styles from './LoginForm.module.css';
 
 export default function LoginForm() {
@@ -36,6 +37,7 @@ export default function LoginForm() {
         const envelope = result.data as AuthLogin200;
         const { user, workspaces } = envelope.data;
         setSession(user, workspaces);
+        setSessionCookie();
         router.push(getPostAuthDestination(workspaces));
       },
       onError: (error) => {

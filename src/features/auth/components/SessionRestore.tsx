@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { fetchSession } from '../api/session';
 import { useAuthStore } from '@/store/auth-store';
 import { getPostAuthDestination } from '../utils/post-auth';
+import { clearSessionCookie } from '@/lib/session-cookie';
 
 export default function SessionRestore() {
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function SessionRestore() {
         }
       })
       .catch(() => {
-        // Sem sessão ativa: permanece na tela de login.
+        clearSessionCookie();
       });
   }, [user, pathname, router, setSession]);
 
