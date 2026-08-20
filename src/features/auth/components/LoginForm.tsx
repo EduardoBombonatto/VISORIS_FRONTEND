@@ -12,7 +12,6 @@ import { useAuthLogin } from '@/api/auth/auth';
 import type { AuthLogin200 } from '@/api/index.schemas';
 import { ApiError } from '@/lib/axios';
 import { useAuthStore } from '@/store/auth-store';
-import { getPostAuthDestination } from '../utils/post-auth';
 import { setSessionCookie } from '@/lib/session-cookie';
 import styles from './LoginForm.module.css';
 
@@ -35,10 +34,10 @@ export default function LoginForm() {
     mutation: {
       onSuccess: (result) => {
         const envelope = result.data as AuthLogin200;
-        const { user, workspaces } = envelope.data;
-        setSession(user, workspaces);
+        const { user } = envelope.data;
+        setSession(user);
         setSessionCookie();
-        router.push(getPostAuthDestination(workspaces));
+        router.push('/dashboard');
       },
       onError: (error) => {
         if (error.fieldErrors.length > 0) {

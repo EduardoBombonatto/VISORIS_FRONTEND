@@ -7,7 +7,7 @@ export function proxy(request: NextRequest) {
   const isPublic = pathname === '/' || pathname === '/auth';
 
   if (hasSession && isPublic) {
-    return NextResponse.redirect(new URL('/workspace', request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   if (!hasSession && !isPublic) {
@@ -18,5 +18,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/auth', '/dashboard/:path*', '/workspace', '/onboarding'],
+  matcher: ['/', '/auth', '/dashboard/:path*'],
 };

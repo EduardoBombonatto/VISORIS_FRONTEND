@@ -4,7 +4,6 @@ import { useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { fetchSession } from '../api/session';
 import { useAuthStore } from '@/store/auth-store';
-import { getPostAuthDestination } from '../utils/post-auth';
 import { clearSessionCookie } from '@/lib/session-cookie';
 
 export default function SessionRestore() {
@@ -20,11 +19,11 @@ export default function SessionRestore() {
 
     fetchSession()
       .then((envelope) => {
-        const { user: restoredUser, workspaces } = envelope.data;
-        setSession(restoredUser, workspaces);
+        const { user: restoredUser } = envelope.data;
+        setSession(restoredUser);
 
         if (pathname === '/' || pathname === '/auth') {
-          router.replace(getPostAuthDestination(workspaces));
+          router.replace('/dashboard');
         }
       })
       .catch(() => {

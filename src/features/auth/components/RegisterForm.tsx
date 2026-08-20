@@ -14,7 +14,6 @@ import { useAuthRegister } from '@/api/auth/auth';
 import type { AuthRegister201 } from '@/api/index.schemas';
 import { ApiError } from '@/lib/axios';
 import { useAuthStore } from '@/store/auth-store';
-import { getPostAuthDestination } from '../utils/post-auth';
 import { setSessionCookie } from '@/lib/session-cookie';
 import styles from './RegisterForm.module.css';
 
@@ -63,9 +62,9 @@ export default function RegisterForm() {
       onSuccess: (result) => {
         const envelope = result.data as AuthRegister201;
         const { user } = envelope.data;
-        setSession(user, []);
+        setSession(user);
         setSessionCookie();
-        router.push(getPostAuthDestination([]));
+        router.push('/dashboard');
       },
       onError: (error) => {
         if (error.fieldErrors.length > 0) {
