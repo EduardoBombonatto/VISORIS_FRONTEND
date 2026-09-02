@@ -1,0 +1,45 @@
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 16px;
+}
+
+.retry {
+  width: auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 16px;
+  text-align: center;
+  border: 1px dashed var(--color-border);
+  border-radius: 16px;
+  background-color: var(--color-surface);
+}
+
+.emptyTitle {
+  font-size: var(--font-title-6);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.emptyText {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+}
+
+.empty .emptyAction {
+  width: auto;
+}

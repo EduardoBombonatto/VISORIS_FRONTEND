@@ -5,10 +5,9 @@
  * API de autenticação e sessões do Visoris.
  *
  * O fluxo de autenticação é baseado em cookies HttpOnly:
- * 1. `POST /api/v1/auth/register` ou `POST /api/v1/auth/login` → recebe os cookies `baseToken` e `refreshToken`.
- * 2. `POST /api/v1/auth/workspace` com o `baseToken` + `refreshToken` → recebe o `accessToken` e um novo `refreshToken`.
- * 3. `POST /api/v1/auth/refresh` com o `refreshToken` → renova `accessToken` e `refreshToken`.
- * 4. `POST /api/v1/auth/logout` com o `refreshToken` → revoga o token e limpa os cookies de sessão.
+ * 1. `POST /api/v1/auth/register` ou `POST /api/v1/auth/login` → recebe os cookies `accessToken` e `refreshToken`.
+ * 2. `POST /api/v1/auth/refresh` com o `refreshToken` → renova `accessToken` e `refreshToken`.
+ * 3. `POST /api/v1/auth/logout` com o `refreshToken` → revoga o token e limpa os cookies de sessão.
  *
  * Todos os tokens são transportados exclusivamente via cookies. Para testar no Swagger UI,
  * faça login/registro e copie os valores dos cookies de resposta para a seção Authorize.
@@ -29,14 +28,6 @@ export interface RegisterRequest {
   professionalDocument?: string | null;
 }
 
-export interface WorkspaceRequest {
-  /**
-   * ID da clínica (Snowflake). Deve ser um número inteiro positivo.
-   * @pattern ^[1-9][0-9]*$
-   */
-  clinicId: string;
-}
-
 export interface UserData {
   /** ID do usuário (Snowflake). */
   id: string;
@@ -45,32 +36,12 @@ export interface UserData {
   professionalDocument?: string | null;
 }
 
-export interface WorkspaceData {
-  /** ID da clínica (Snowflake). */
-  clinicId: string;
-  name: string;
-  role: string;
-}
-
 export interface LoginResponse {
   user: UserData;
-  workspaces: WorkspaceData[];
 }
 
 export interface RegisterResponse {
   user: UserData;
-  workspaces: string[];
-}
-
-export interface ActiveWorkspace {
-  /** ID da clínica (Snowflake). */
-  clinicId: string;
-  name: string;
-  role: string;
-}
-
-export interface WorkspaceResponse {
-  activeWorkspace: ActiveWorkspace;
 }
 
 export interface RefreshResponse {
@@ -83,6 +54,40 @@ export interface ValidationError {
   field: string;
   /** Mensagem de erro do campo. */
   message: string;
+}
+
+export interface ClinicData {
+  /** ID da clínica (Snowflake). */
+  id: string;
+  name: string;
+  /** @nullable */
+  cnpj?: string | null;
+  /** @nullable */
+  phone?: string | null;
+  /** @nullable */
+  address?: string | null;
+}
+
+export interface CreateClinicRequest {
+  /** Nome da clínica (obrigatório, não pode ser vazio). */
+  name: string;
+  /**
+   * CNPJ opcional. Deve ter 14 dígitos com dígitos verificadores válidos (Módulo 11); normalizado para apenas dígitos.
+   * @nullable
+   */
+  cnpj?: string | null;
+  /** @nullable */
+  phone?: string | null;
+  /** @nullable */
+  address?: string | null;
+}
+
+export interface ClinicListResponse {
+  clinics: ClinicData[];
+}
+
+export interface CreateClinicResponse {
+  clinic: ClinicData;
 }
 
 export type AuthLogin200 = {
@@ -231,75 +236,6 @@ export type AuthRegister500 = {
   timestamp: string;
 };
 
-export type AuthSelectWorkspace200 = {
-  erro: boolean;
-  message: string;
-  data: WorkspaceResponse;
-  httpcode: number;
-  timestamp: string;
-};
-
-export type AuthSelectWorkspace400 =
-  | {
-      erro: boolean;
-      message: string;
-      /** @nullable */
-      data: { [key: string]: unknown } | null;
-      httpcode: number;
-      timestamp: string;
-    }
-  | {
-      erro: boolean;
-      message: string;
-      data: {
-        errors: ValidationError[];
-      };
-      httpcode: number;
-      timestamp: string;
-    };
-
-/**
- * @nullable
- */
-export type AuthSelectWorkspace401Data = { [key: string]: unknown } | null;
-
-export type AuthSelectWorkspace401 = {
-  erro: boolean;
-  message: string;
-  /** @nullable */
-  data: AuthSelectWorkspace401Data;
-  httpcode: number;
-  timestamp: string;
-};
-
-/**
- * @nullable
- */
-export type AuthSelectWorkspace403Data = { [key: string]: unknown } | null;
-
-export type AuthSelectWorkspace403 = {
-  erro: boolean;
-  message: string;
-  /** @nullable */
-  data: AuthSelectWorkspace403Data;
-  httpcode: number;
-  timestamp: string;
-};
-
-/**
- * @nullable
- */
-export type AuthSelectWorkspace500Data = { [key: string]: unknown } | null;
-
-export type AuthSelectWorkspace500 = {
-  erro: boolean;
-  message: string;
-  /** @nullable */
-  data: AuthSelectWorkspace500Data;
-  httpcode: number;
-  timestamp: string;
-};
-
 export type AuthMe200 = {
   erro: boolean;
   message: string;
@@ -360,6 +296,105 @@ export type AuthLogout500 = {
   message: string;
   /** @nullable */
   data: AuthLogout500Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type ClinicsList200 = {
+  erro: boolean;
+  message: string;
+  data: ClinicListResponse;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type ClinicsList401Data = { [key: string]: unknown } | null;
+
+export type ClinicsList401 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: ClinicsList401Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type ClinicsList500Data = { [key: string]: unknown } | null;
+
+export type ClinicsList500 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: ClinicsList500Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type ClinicsCreate200 = {
+  erro: boolean;
+  message: string;
+  data: CreateClinicResponse;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type ClinicsCreate201 = {
+  erro: boolean;
+  message: string;
+  data: CreateClinicResponse;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type ClinicsCreate400 =
+  | {
+      erro: boolean;
+      message: string;
+      /** @nullable */
+      data: { [key: string]: unknown } | null;
+      httpcode: number;
+      timestamp: string;
+    }
+  | {
+      erro: boolean;
+      message: string;
+      data: {
+        errors: ValidationError[];
+      };
+      httpcode: number;
+      timestamp: string;
+    };
+
+/**
+ * @nullable
+ */
+export type ClinicsCreate401Data = { [key: string]: unknown } | null;
+
+export type ClinicsCreate401 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: ClinicsCreate401Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type ClinicsCreate500Data = { [key: string]: unknown } | null;
+
+export type ClinicsCreate500 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: ClinicsCreate500Data;
   httpcode: number;
   timestamp: string;
 };

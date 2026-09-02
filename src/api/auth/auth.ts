@@ -5,10 +5,9 @@
  * API de autenticação e sessões do Visoris.
  *
  * O fluxo de autenticação é baseado em cookies HttpOnly:
- * 1. `POST /api/v1/auth/register` ou `POST /api/v1/auth/login` → recebe os cookies `baseToken` e `refreshToken`.
- * 2. `POST /api/v1/auth/workspace` com o `baseToken` + `refreshToken` → recebe o `accessToken` e um novo `refreshToken`.
- * 3. `POST /api/v1/auth/refresh` com o `refreshToken` → renova `accessToken` e `refreshToken`.
- * 4. `POST /api/v1/auth/logout` com o `refreshToken` → revoga o token e limpa os cookies de sessão.
+ * 1. `POST /api/v1/auth/register` ou `POST /api/v1/auth/login` → recebe os cookies `accessToken` e `refreshToken`.
+ * 2. `POST /api/v1/auth/refresh` com o `refreshToken` → renova `accessToken` e `refreshToken`.
+ * 3. `POST /api/v1/auth/logout` com o `refreshToken` → revoga o token e limpa os cookies de sessão.
  *
  * Todos os tokens são transportados exclusivamente via cookies. Para testar no Swagger UI,
  * faça login/registro e copie os valores dos cookies de resposta para a seção Authorize.
@@ -47,14 +46,8 @@ import type {
   AuthRegister400,
   AuthRegister409,
   AuthRegister500,
-  AuthSelectWorkspace200,
-  AuthSelectWorkspace400,
-  AuthSelectWorkspace401,
-  AuthSelectWorkspace403,
-  AuthSelectWorkspace500,
   LoginRequest,
   RegisterRequest,
-  WorkspaceRequest,
 } from '../index.schemas';
 
 import { customInstance } from '../../lib/axios';
@@ -112,14 +105,13 @@ export const getAuthLoginUrl = () => {
 };
 
 /**
- * Valida as credenciais do usuário. Em caso de sucesso retorna os dados do usuário e a lista de
- * workspaces (clínicas) dos quais ele é membro, além de definir os cookies `baseToken`
- * (300s) e `refreshToken` (7 dias).
+ * Valida as credenciais do usuário. Em caso de sucesso retorna os dados do usuário
+ * (ID, nome completo e documento profissional) e define os cookies `accessToken`
+ * (900s) e `refreshToken` (7 dias).
  *
- * O `baseToken` deve ser enviado na rota POST /api/v1/auth/workspace para selecionar um workspace
- * e obter o `accessToken`. Falhas de autenticação retornam sempre a mesma mensagem genérica
+ * Falhas de autenticação retornam sempre a mesma mensagem genérica
  * "Credenciais inválidas." para não revelar quais credenciais estão incorretas.
- * @summary Autentica um usuário e inicia uma sessão parcial (Base Token).
+ * @summary Autentica um usuário e inicia a sessão.
  */
 export const authLogin = async (
   loginRequest: LoginRequest,
@@ -174,7 +166,7 @@ export type AuthLoginMutationBody = LoginRequest;
 export type AuthLoginMutationError = AuthLogin400 | AuthLogin401 | AuthLogin500;
 
 /**
- * @summary Autentica um usuário e inicia uma sessão parcial (Base Token).
+ * @summary Autentica um usuário e inicia a sessão.
  */
 export const useAuthLogin = <
   TError = AuthLogin400 | AuthLogin401 | AuthLogin500,
@@ -313,15 +305,14 @@ export const getAuthRegisterUrl = () => {
 };
 
 /**
- * Cria a conta e já emite os cookies `baseToken` (300s) e `refreshToken` (7 dias).
- * A lista de workspaces da resposta é sempre vazia, pois o vínculo com clínicas é criado depois.
+ * Cria a conta e já emite os cookies `accessToken` (900s) e `refreshToken` (7 dias).
  *
  * Regras de validação:
  * - `fullName`, `email`, `password` e `professionalDocument` são obrigatórios (o documento pode vir `null`, mas não vazio).
  * - `email` deve ter formato válido e não ser de domínio descartável.
  * - `password` deve ter no mínimo 8 caracteres, conter maiúscula, minúscula, número e caractere especial, e apenas caracteres ASCII.
  * - Limites: `fullName` e `email` até 255 caracteres; `professionalDocument` até 50.
- * @summary Cria uma conta de usuário (DOCTOR) e inicia uma sessão parcial.
+ * @summary Cria uma conta de usuário (DOCTOR) e inicia a sessão.
  */
 export const authRegister = async (
   registerRequest: RegisterRequest,
@@ -376,7 +367,7 @@ export type AuthRegisterMutationBody = RegisterRequest;
 export type AuthRegisterMutationError = AuthRegister400 | AuthRegister409 | AuthRegister500;
 
 /**
- * @summary Cria uma conta de usuário (DOCTOR) e inicia uma sessão parcial.
+ * @summary Cria uma conta de usuário (DOCTOR) e inicia a sessão.
  */
 export const useAuthRegister = <
   TError = AuthRegister400 | AuthRegister409 | AuthRegister500,
@@ -399,146 +390,6 @@ export const useAuthRegister = <
   TContext
 > => {
   return useMutation(getAuthRegisterMutationOptions(options), queryClient);
-};
-export type authSelectWorkspaceResponse200 = {
-  data: AuthSelectWorkspace200;
-  status: 200;
-};
-
-export type authSelectWorkspaceResponse400 = {
-  data: AuthSelectWorkspace400;
-  status: 400;
-};
-
-export type authSelectWorkspaceResponse401 = {
-  data: AuthSelectWorkspace401;
-  status: 401;
-};
-
-export type authSelectWorkspaceResponse403 = {
-  data: AuthSelectWorkspace403;
-  status: 403;
-};
-
-export type authSelectWorkspaceResponse500 = {
-  data: AuthSelectWorkspace500;
-  status: 500;
-};
-
-export type authSelectWorkspaceResponseSuccess = authSelectWorkspaceResponse200 & {
-  headers: Headers;
-};
-export type authSelectWorkspaceResponseError = (
-  | authSelectWorkspaceResponse400
-  | authSelectWorkspaceResponse401
-  | authSelectWorkspaceResponse403
-  | authSelectWorkspaceResponse500
-) & {
-  headers: Headers;
-};
-
-export type authSelectWorkspaceResponse =
-  authSelectWorkspaceResponseSuccess | authSelectWorkspaceResponseError;
-
-export const getAuthSelectWorkspaceUrl = () => {
-  return `/api/v1/auth/workspace`;
-};
-
-/**
- * Usa o `baseToken` (emitido em login/registro) e o `refreshToken` para escolher a clínica ativa.
- * Em caso de sucesso: emite `accessToken` (900s), rotaciona o `refreshToken` e invalida (blacklist)
- * o `baseToken` — o mesmo `baseToken` não pode ser reutilizado.
- *
- * O `clinicId` deve ser um número inteiro positivo correspondente a uma clínica da qual o usuário é membro.
- * @summary Seleciona o workspace (clínica) e emite o access token.
- */
-export const authSelectWorkspace = async (
-  workspaceRequest: WorkspaceRequest,
-  options?: Parameters<typeof customInstance>[1],
-): Promise<authSelectWorkspaceResponse> => {
-  return customInstance<authSelectWorkspaceResponse>(getAuthSelectWorkspaceUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(workspaceRequest),
-  });
-};
-
-export const getAuthSelectWorkspaceMutationOptions = <
-  TError =
-    | AuthSelectWorkspace400
-    | AuthSelectWorkspace401
-    | AuthSelectWorkspace403
-    | AuthSelectWorkspace500,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof authSelectWorkspace>>,
-    TError,
-    { data: WorkspaceRequest },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof authSelectWorkspace>>,
-  TError,
-  { data: WorkspaceRequest },
-  TContext
-> => {
-  const mutationKey = ['authSelectWorkspace'];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof authSelectWorkspace>>,
-    { data: WorkspaceRequest }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return authSelectWorkspace(data, requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type AuthSelectWorkspaceMutationResult = NonNullable<
-  Awaited<ReturnType<typeof authSelectWorkspace>>
->;
-export type AuthSelectWorkspaceMutationBody = WorkspaceRequest;
-export type AuthSelectWorkspaceMutationError =
-  AuthSelectWorkspace400 | AuthSelectWorkspace401 | AuthSelectWorkspace403 | AuthSelectWorkspace500;
-
-/**
- * @summary Seleciona o workspace (clínica) e emite o access token.
- */
-export const useAuthSelectWorkspace = <
-  TError =
-    | AuthSelectWorkspace400
-    | AuthSelectWorkspace401
-    | AuthSelectWorkspace403
-    | AuthSelectWorkspace500,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof authSelectWorkspace>>,
-      TError,
-      { data: WorkspaceRequest },
-      TContext
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof authSelectWorkspace>>,
-  TError,
-  { data: WorkspaceRequest },
-  TContext
-> => {
-  return useMutation(getAuthSelectWorkspaceMutationOptions(options), queryClient);
 };
 export type authMeResponse200 = {
   data: AuthMe200;
@@ -569,7 +420,7 @@ export const getAuthMeUrl = () => {
 };
 
 /**
- * Retorna o usuário autenticado e seus workspaces a partir dos cookies.
+ * Retorna o usuário autenticado a partir dos cookies.
  * Se o `accessToken` for válido, a sessão é retornada diretamente. Caso contrário,
  * tenta rotacionar a sessão usando o `refreshToken` (emitindo novos cookies `accessToken`
  * e `refreshToken`) antes de retornar os dados.
@@ -705,8 +556,8 @@ export const getAuthLogoutUrl = () => {
 };
 
 /**
- * Revoga o `refreshToken` recebido via cookie e limpa os cookies `accessToken`, `refreshToken`
- * e `baseToken` (Max-Age=0). Não possui corpo de requisição e é idempotente: cookies ausentes,
+ * Revoga o `refreshToken` recebido via cookie e limpa os cookies `accessToken` e `refreshToken`
+ * (Max-Age=0). Não possui corpo de requisição e é idempotente: cookies ausentes,
  * desconhecidos ou já revogados ainda retornam 200.
  * @summary Encerra a sessão atual e limpa os cookies de sessão.
  */

@@ -5,7 +5,10 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import styles from './Sidebar.module.css';
 
-const NAV_ITEMS = [{ href: '/dashboard', label: 'Dashboard' }];
+const NAV_ITEMS = [
+  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/clinics', label: 'Clínicas' },
+];
 
 export default function Sidebar() {
   const pathname = usePathname();
