@@ -8,6 +8,7 @@ import styles from './Sidebar.module.css';
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/clinics', label: 'Clínicas' },
+  { href: '/patients', label: 'Pacientes' },
 ];
 
 export default function Sidebar() {

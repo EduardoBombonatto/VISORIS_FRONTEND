@@ -27,7 +27,7 @@ beforeEach(() => {
   mutate.mockReset();
   mutationOptions = {};
   vi.mocked(useAuthLogout).mockImplementation((options) => {
-    mutationOptions = options?.mutation ?? {};
+    mutationOptions = (options?.mutation as unknown as typeof mutationOptions) ?? {};
     return { mutate, isPending: false } as never;
   });
   useAuthStore.setState({

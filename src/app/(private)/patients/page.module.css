@@ -1,0 +1,94 @@
+.pageContainer {
+  display: flex;
+  height: calc(100vh - 64px - 48px); /* Full height minus header and paddings, actually let's just make it fill the negative space */
+  /* The AppShell has 24px padding all around. We want to bleed out of it. */
+  margin: -24px;
+  width: calc(100% + 48px);
+  height: calc(100vh - 64px); /* assuming top header is 64px. If appshell is min-height 100vh, we can just use 100% */
+  background-color: #f9fafb; /* gray-50 */
+  overflow: hidden;
+}
+
+.workspace {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  overflow: hidden;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Skeletons Layout */
+.listSkeletonContainer {
+  width: 20rem; /* w-80 */
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9fafb;
+  flex-shrink: 0;
+  padding: 1.5rem;
+}
+
+.listSkeletonError {
+  align-items: center;
+  justify-content: center;
+}
+
+.errorMessage {
+  color: #ef4444; /* red-500 */
+  font-size: 0.875rem; /* text-sm */
+}
+
+.detailSkeletonContainer {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  padding: 2rem; /* p-8 */
+}
+
+.skeletonHeader {
+  display: flex;
+  gap: 1.5rem; /* gap-6 */
+  margin-bottom: 3rem; /* mb-12 */
+}
+
+.skeletonAvatar {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 9999px;
+}
+
+.skeletonTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.skeletonTitle {
+  height: 2rem;
+  width: 12rem;
+}
+
+.skeletonSubtitle {
+  height: 1rem;
+  width: 16rem;
+}
+
+.skeletonSectionTitle {
+  height: 1.5rem;
+  width: 10rem;
+  margin-bottom: 1rem;
+}
+
+.skeletonSectionBody {
+  height: 8rem;
+  width: 100%;
+  margin-bottom: 2.5rem;
+}
+
+.skeletonTimelineBody {
+  height: 12rem;
+  width: 100%;
+}
