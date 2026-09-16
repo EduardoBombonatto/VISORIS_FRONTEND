@@ -4,14 +4,20 @@ import styles from '../styles/PatientModal.module.css';
 
 interface PatientModalProps {
   onClose: () => void;
+  clientId?: string;
+  clientName?: string;
 }
 
-export function PatientModal({ onClose }: PatientModalProps) {
+export function PatientModal({ onClose, clientId, clientName }: PatientModalProps) {
+  const isOnlyPet = !!clientId;
+
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
-          <h2 className={styles.modalTitle}>Novo Cadastro</h2>
+          <h2 className={styles.modalTitle}>
+            {isOnlyPet ? 'Novo Paciente (Pet)' : 'Novo Cadastro (Tutor e Pet)'}
+          </h2>
           <button onClick={onClose} className={styles.closeButton}>
             <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -24,7 +30,12 @@ export function PatientModal({ onClose }: PatientModalProps) {
           </button>
         </div>
         <div className={styles.modalBody}>
-          <PatientForm onSuccess={onClose} onCancel={onClose} />
+          <PatientForm
+            onSuccess={onClose}
+            onCancel={onClose}
+            existingClientId={clientId}
+            existingClientName={clientName}
+          />
         </div>
       </div>
     </div>

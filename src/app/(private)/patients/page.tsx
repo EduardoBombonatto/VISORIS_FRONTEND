@@ -8,18 +8,41 @@ import { PatientModal } from '@/features/patients/components/PatientModal';
 import { useClientsList } from '@/api/clients/clients';
 import styles from './page.module.css';
 
-import { ClientListResponse } from '@/api/index.schemas';
-// ...
+import { ClientListResponse, ClientResponse } from '@/api/index.schemas';
+
 export default function PatientsPage() {
   const { data: clientsResponse, isLoading, error } = useClientsList();
   const clients = (clientsResponse?.data?.data as ClientListResponse)?.clients || [];
 
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(undefined);
+  const [modalClient, setModalClient] = useState<ClientResponse | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fallback to first client if none selected
   const selectedClient =
     clients.find((c) => c.id === selectedClientId) || (clients.length ? clients[0] : null);
+
+  const handleOpenGlobalModal = () => {
+    setModalClient(undefined);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenModalForClient = (client: ClientResponse) => {
+    setModalClient(client);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setModalClient(undefined);
+  };
+
+  const handleClientDeleted = (deletedClientId: string) => {
+    if (selectedClientId === deletedClientId) {
+      const remainingClients = clients.filter((c) => c.id !== deletedClientId);
+      setSelectedClientId(remainingClients.length > 0 ? remainingClients[0].id : undefined);
+    }
+  };
 
   return (
     <div className={styles.pageContainer}>
@@ -46,7 +69,7 @@ export default function PatientsPage() {
             clients={clients}
             selectedClientId={selectedClient?.id}
             onSelectClient={(c) => setSelectedClientId(c.id)}
-            onAddPatient={() => setIsModalOpen(true)}
+            onAddPatient={handleOpenGlobalModal}
           />
         )}
 
@@ -66,11 +89,23 @@ export default function PatientsPage() {
             <Skeleton className={styles.skeletonTimelineBody} />
           </section>
         ) : (
-          <PatientDetail client={selectedClient} />
+          <PatientDetail
+            client={selectedClient}
+            hasClients={clients.length > 0}
+            onAddTutor={handleOpenGlobalModal}
+            onAddPatientForClient={handleOpenModalForClient}
+            onClientDeleted={handleClientDeleted}
+          />
         )}
       </div>
 
-      {isModalOpen && <PatientModal onClose={() => setIsModalOpen(false)} />}
+      {isModalOpen && (
+        <PatientModal
+          onClose={handleCloseModal}
+          clientId={modalClient?.id}
+          clientName={modalClient?.fullName}
+        />
+      )}
     </div>
   );
 }

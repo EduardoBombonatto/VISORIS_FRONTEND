@@ -198,6 +198,36 @@ export interface PatientListResponse {
   patients: PatientResponse[];
 }
 
+/**
+ * Tipo de paciente (PET ou HUMAN).
+ */
+export type UpdatePatientRequestPatientType =
+  (typeof UpdatePatientRequestPatientType)[keyof typeof UpdatePatientRequestPatientType];
+
+export const UpdatePatientRequestPatientType = {
+  PET: 'PET',
+  HUMAN: 'HUMAN',
+} as const;
+
+/**
+ * Detalhes biológicos livres em formato JSON (raça, pelagem, idade, etc.).
+ */
+export type UpdatePatientRequestBiologicalDetails = { [key: string]: unknown };
+
+export interface UpdatePatientRequest {
+  /** Nome do paciente. */
+  name: string;
+  /** Tipo de paciente (PET ou HUMAN). */
+  patient_type: UpdatePatientRequestPatientType;
+  /**
+   * Data de nascimento (YYYY-MM-DD).
+   * @nullable
+   */
+  birth_date?: string | null;
+  /** Detalhes biológicos livres em formato JSON (raça, pelagem, idade, etc.). */
+  biological_details: UpdatePatientRequestBiologicalDetails;
+}
+
 export type AuthLogin200 = {
   erro: boolean;
   message: string;
@@ -645,6 +675,159 @@ export type ClientsCreate500 = {
   timestamp: string;
 };
 
+export type ClientsUpdate200 = {
+  erro: boolean;
+  message: string;
+  data: ClientResponse;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type ClientsUpdate400 =
+  | {
+      erro: boolean;
+      message: string;
+      /** @nullable */
+      data: { [key: string]: unknown } | null;
+      httpcode: number;
+      timestamp: string;
+    }
+  | {
+      erro: boolean;
+      message: string;
+      data: {
+        errors: ValidationError[];
+      };
+      httpcode: number;
+      timestamp: string;
+    };
+
+/**
+ * @nullable
+ */
+export type ClientsUpdate401Data = { [key: string]: unknown } | null;
+
+export type ClientsUpdate401 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: ClientsUpdate401Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type ClientsUpdate404Data = { [key: string]: unknown } | null;
+
+export type ClientsUpdate404 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: ClientsUpdate404Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type ClientsUpdate409Data = { [key: string]: unknown } | null;
+
+export type ClientsUpdate409 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: ClientsUpdate409Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type ClientsUpdate500Data = { [key: string]: unknown } | null;
+
+export type ClientsUpdate500 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: ClientsUpdate500Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type ClientsDelete200Data = { [key: string]: unknown } | null;
+
+export type ClientsDelete200 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: ClientsDelete200Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type ClientsDelete401Data = { [key: string]: unknown } | null;
+
+export type ClientsDelete401 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: ClientsDelete401Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type ClientsDelete404Data = { [key: string]: unknown } | null;
+
+export type ClientsDelete404 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: ClientsDelete404Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type ClientsDelete409Data = { [key: string]: unknown } | null;
+
+export type ClientsDelete409 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: ClientsDelete409Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type ClientsDelete500Data = { [key: string]: unknown } | null;
+
+export type ClientsDelete500 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: ClientsDelete500Data;
+  httpcode: number;
+  timestamp: string;
+};
+
 export type PatientsListParams = {
   /**
    * ID do cliente/tutor.
@@ -769,6 +952,145 @@ export type PatientsCreate500 = {
   message: string;
   /** @nullable */
   data: PatientsCreate500Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type PatientsUpdate200 = {
+  erro: boolean;
+  message: string;
+  data: PatientResponse;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type PatientsUpdate400 =
+  | {
+      erro: boolean;
+      message: string;
+      /** @nullable */
+      data: { [key: string]: unknown } | null;
+      httpcode: number;
+      timestamp: string;
+    }
+  | {
+      erro: boolean;
+      message: string;
+      data: {
+        errors: ValidationError[];
+      };
+      httpcode: number;
+      timestamp: string;
+    };
+
+/**
+ * @nullable
+ */
+export type PatientsUpdate401Data = { [key: string]: unknown } | null;
+
+export type PatientsUpdate401 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: PatientsUpdate401Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type PatientsUpdate404Data = { [key: string]: unknown } | null;
+
+export type PatientsUpdate404 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: PatientsUpdate404Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type PatientsUpdate500Data = { [key: string]: unknown } | null;
+
+export type PatientsUpdate500 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: PatientsUpdate500Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type PatientsDelete200Data = { [key: string]: unknown } | null;
+
+export type PatientsDelete200 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: PatientsDelete200Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type PatientsDelete401Data = { [key: string]: unknown } | null;
+
+export type PatientsDelete401 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: PatientsDelete401Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type PatientsDelete404Data = { [key: string]: unknown } | null;
+
+export type PatientsDelete404 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: PatientsDelete404Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type PatientsDelete409Data = { [key: string]: unknown } | null;
+
+export type PatientsDelete409 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: PatientsDelete409Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+/**
+ * @nullable
+ */
+export type PatientsDelete500Data = { [key: string]: unknown } | null;
+
+export type PatientsDelete500 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: PatientsDelete500Data;
   httpcode: number;
   timestamp: string;
 };

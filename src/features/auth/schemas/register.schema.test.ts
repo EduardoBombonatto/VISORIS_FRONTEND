@@ -5,7 +5,7 @@ const valid = {
   fullName: 'Dr. João Silva',
   email: 'dr@clinica.com.br',
   password: 'Senha@123',
-  documentType: 'CRM',
+  documentType: 'CRMV',
   professionalDocument: '123456-SP',
   acceptTerms: true,
 };
@@ -47,6 +47,10 @@ describe('registerSchema', () => {
 
   it('aceita CRMV como tipo de documento', () => {
     expect(registerSchema.safeParse({ ...valid, documentType: 'CRMV' }).success).toBe(true);
+  });
+
+  it('rejeita CRM pois médicos estão temporariamente desabilitados', () => {
+    expect(registerSchema.safeParse({ ...valid, documentType: 'CRM' }).success).toBe(false);
   });
 
   it('rejeita quando termos não são aceitos', () => {

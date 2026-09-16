@@ -37,11 +37,22 @@ import type {
   ClientsCreate404,
   ClientsCreate409,
   ClientsCreate500,
+  ClientsDelete200,
+  ClientsDelete401,
+  ClientsDelete404,
+  ClientsDelete409,
+  ClientsDelete500,
   ClientsList200,
   ClientsList401,
   ClientsList404,
   ClientsList500,
   ClientsListParams,
+  ClientsUpdate200,
+  ClientsUpdate400,
+  ClientsUpdate401,
+  ClientsUpdate404,
+  ClientsUpdate409,
+  ClientsUpdate500,
 } from '../index.schemas';
 
 import { customInstance } from '../../lib/axios';
@@ -358,4 +369,260 @@ export const useClientsCreate = <
   TContext
 > => {
   return useMutation(getClientsCreateMutationOptions(options), queryClient);
+};
+export type clientsUpdateResponse200 = {
+  data: ClientsUpdate200;
+  status: 200;
+};
+
+export type clientsUpdateResponse400 = {
+  data: ClientsUpdate400;
+  status: 400;
+};
+
+export type clientsUpdateResponse401 = {
+  data: ClientsUpdate401;
+  status: 401;
+};
+
+export type clientsUpdateResponse404 = {
+  data: ClientsUpdate404;
+  status: 404;
+};
+
+export type clientsUpdateResponse409 = {
+  data: ClientsUpdate409;
+  status: 409;
+};
+
+export type clientsUpdateResponse500 = {
+  data: ClientsUpdate500;
+  status: 500;
+};
+
+export type clientsUpdateResponseSuccess = clientsUpdateResponse200 & {
+  headers: Headers;
+};
+export type clientsUpdateResponseError = (
+  | clientsUpdateResponse400
+  | clientsUpdateResponse401
+  | clientsUpdateResponse404
+  | clientsUpdateResponse409
+  | clientsUpdateResponse500
+) & {
+  headers: Headers;
+};
+
+export type clientsUpdateResponse = clientsUpdateResponseSuccess | clientsUpdateResponseError;
+
+export const getClientsUpdateUrl = (id: number) => {
+  return `/api/v1/clients/${id}`;
+};
+
+/**
+ * Atualiza as informações do tutor pertencente ao usuário autenticado.
+ * @summary Atualiza os dados de um tutor/cliente.
+ */
+export const clientsUpdate = async (
+  id: number,
+  clientRequest: ClientRequest,
+  options?: Parameters<typeof customInstance>[1],
+): Promise<clientsUpdateResponse> => {
+  return customInstance<clientsUpdateResponse>(getClientsUpdateUrl(id), {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(clientRequest),
+  });
+};
+
+export const getClientsUpdateMutationOptions = <
+  TError =
+    ClientsUpdate400 | ClientsUpdate401 | ClientsUpdate404 | ClientsUpdate409 | ClientsUpdate500,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof clientsUpdate>>,
+    TError,
+    { id: number; data: ClientRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof clientsUpdate>>,
+  TError,
+  { id: number; data: ClientRequest },
+  TContext
+> => {
+  const mutationKey = ['clientsUpdate'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof clientsUpdate>>,
+    { id: number; data: ClientRequest }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return clientsUpdate(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ClientsUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof clientsUpdate>>>;
+export type ClientsUpdateMutationBody = ClientRequest;
+export type ClientsUpdateMutationError =
+  ClientsUpdate400 | ClientsUpdate401 | ClientsUpdate404 | ClientsUpdate409 | ClientsUpdate500;
+
+/**
+ * @summary Atualiza os dados de um tutor/cliente.
+ */
+export const useClientsUpdate = <
+  TError =
+    ClientsUpdate400 | ClientsUpdate401 | ClientsUpdate404 | ClientsUpdate409 | ClientsUpdate500,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof clientsUpdate>>,
+      TError,
+      { id: number; data: ClientRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof clientsUpdate>>,
+  TError,
+  { id: number; data: ClientRequest },
+  TContext
+> => {
+  return useMutation(getClientsUpdateMutationOptions(options), queryClient);
+};
+export type clientsDeleteResponse200 = {
+  data: ClientsDelete200;
+  status: 200;
+};
+
+export type clientsDeleteResponse401 = {
+  data: ClientsDelete401;
+  status: 401;
+};
+
+export type clientsDeleteResponse404 = {
+  data: ClientsDelete404;
+  status: 404;
+};
+
+export type clientsDeleteResponse409 = {
+  data: ClientsDelete409;
+  status: 409;
+};
+
+export type clientsDeleteResponse500 = {
+  data: ClientsDelete500;
+  status: 500;
+};
+
+export type clientsDeleteResponseSuccess = clientsDeleteResponse200 & {
+  headers: Headers;
+};
+export type clientsDeleteResponseError = (
+  | clientsDeleteResponse401
+  | clientsDeleteResponse404
+  | clientsDeleteResponse409
+  | clientsDeleteResponse500
+) & {
+  headers: Headers;
+};
+
+export type clientsDeleteResponse = clientsDeleteResponseSuccess | clientsDeleteResponseError;
+
+export const getClientsDeleteUrl = (id: number) => {
+  return `/api/v1/clients/${id}`;
+};
+
+/**
+ * Remove um tutor vinculado ao usuário autenticado caso não haja pacientes vinculados.
+ * @summary Exclui um tutor/cliente.
+ */
+export const clientsDelete = async (
+  id: number,
+  options?: Parameters<typeof customInstance>[1],
+): Promise<clientsDeleteResponse> => {
+  return customInstance<clientsDeleteResponse>(getClientsDeleteUrl(id), {
+    ...options,
+    method: 'DELETE',
+  });
+};
+
+export const getClientsDeleteMutationOptions = <
+  TError = ClientsDelete401 | ClientsDelete404 | ClientsDelete409 | ClientsDelete500,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof clientsDelete>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof clientsDelete>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ['clientsDelete'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof clientsDelete>>, { id: number }> = (
+    props,
+  ) => {
+    const { id } = props ?? {};
+
+    return clientsDelete(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ClientsDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof clientsDelete>>>;
+
+export type ClientsDeleteMutationError =
+  ClientsDelete401 | ClientsDelete404 | ClientsDelete409 | ClientsDelete500;
+
+/**
+ * @summary Exclui um tutor/cliente.
+ */
+export const useClientsDelete = <
+  TError = ClientsDelete401 | ClientsDelete404 | ClientsDelete409 | ClientsDelete500,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof clientsDelete>>,
+      TError,
+      { id: number },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof clientsDelete>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getClientsDeleteMutationOptions(options), queryClient);
 };

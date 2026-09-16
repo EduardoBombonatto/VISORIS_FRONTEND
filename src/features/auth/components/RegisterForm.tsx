@@ -34,7 +34,7 @@ export default function RegisterForm() {
       fullName: '',
       email: '',
       password: '',
-      documentType: 'CRM',
+      documentType: 'CRMV',
       professionalDocument: '',
       acceptTerms: false,
     },
@@ -123,9 +123,12 @@ export default function RegisterForm() {
               />
             </div>
             <div className={styles.segmented} role="radiogroup" aria-label="Tipo de documento">
-              <label className={styles.segment}>
-                <input type="radio" value="CRM" {...register('documentType')} />
-                <span>CRM</span>
+              <label
+                className={`${styles.segment} ${styles.segmentDisabled}`}
+                title="Cadastro de médicos humanos temporariamente indisponível. Apenas médicos veterinários (CRMV) no momento."
+              >
+                <input type="radio" value="CRM" disabled {...register('documentType')} />
+                <span>CRM (Em breve)</span>
               </label>
               <label className={styles.segment}>
                 <input type="radio" value="CRMV" {...register('documentType')} />

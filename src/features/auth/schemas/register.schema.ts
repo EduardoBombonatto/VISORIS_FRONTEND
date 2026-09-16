@@ -1,30 +1,38 @@
 import { z } from 'zod';
 
-export const registerSchema = z.object({
-  fullName: z
-    .string()
-    .min(1, 'Nome completo é obrigatório.')
-    .max(255, 'Nome completo excede o limite de 255 caracteres.'),
-  email: z
-    .string()
-    .min(1, 'E-mail é obrigatório.')
-    .email('Formato de e-mail inválido.')
-    .max(255, 'E-mail excede o limite de 255 caracteres.'),
-  password: z
-    .string()
-    .min(8, 'A senha deve conter pelo menos 8 caracteres.')
-    .regex(/[A-Z]/, 'A senha deve conter pelo menos uma letra maiúscula.')
-    .regex(/[a-z]/, 'A senha deve conter pelo menos uma letra minúscula.')
-    .regex(/[0-9]/, 'A senha deve conter pelo menos um número.')
-    .regex(/[^A-Za-z0-9]/, 'A senha deve conter pelo menos um caractere especial.'),
-  documentType: z.enum(['CRM', 'CRMV']),
-  professionalDocument: z
-    .string()
-    .min(1, 'Documento profissional é obrigatório.')
-    .max(50, 'Documento profissional excede o limite de 50 caracteres.')
-    .regex(/\d/, 'O documento deve conter números.')
-    .regex(/[A-Za-z]{2}/, 'O documento deve conter a UF (ex: SP).'),
-  acceptTerms: z.boolean().refine((value) => value === true, 'Você deve aceitar os termos de uso.'),
-});
+export const registerSchema = z
+  .object({
+    fullName: z
+      .string()
+      .min(1, 'Nome completo é obrigatório.')
+      .max(255, 'Nome completo excede o limite de 255 caracteres.'),
+    email: z
+      .string()
+      .min(1, 'E-mail é obrigatório.')
+      .email('Formato de e-mail inválido.')
+      .max(255, 'E-mail excede o limite de 255 caracteres.'),
+    password: z
+      .string()
+      .min(8, 'A senha deve conter pelo menos 8 caracteres.')
+      .regex(/[A-Z]/, 'A senha deve conter pelo menos uma letra maiúscula.')
+      .regex(/[a-z]/, 'A senha deve conter pelo menos uma letra minúscula.')
+      .regex(/[0-9]/, 'A senha deve conter pelo menos um número.')
+      .regex(/[^A-Za-z0-9]/, 'A senha deve conter pelo menos um caractere especial.'),
+    documentType: z.enum(['CRM', 'CRMV']),
+    professionalDocument: z
+      .string()
+      .min(1, 'Documento profissional é obrigatório.')
+      .max(50, 'Documento profissional excede o limite de 50 caracteres.')
+      .regex(/\d/, 'O documento deve conter números.')
+      .regex(/[A-Za-z]{2}/, 'O documento deve conter a UF (ex: SP).'),
+    acceptTerms: z
+      .boolean()
+      .refine((value) => value === true, 'Você deve aceitar os termos de uso.'),
+  })
+  .refine((data) => data.documentType === 'CRMV', {
+    message:
+      'O cadastro de médicos humanos está temporariamente indisponível. Apenas médicos veterinários (CRMV) podem se cadastrar no momento.',
+    path: ['documentType'],
+  });
 
 export type RegisterFormValues = z.infer<typeof registerSchema>;

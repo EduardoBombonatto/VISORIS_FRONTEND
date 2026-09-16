@@ -67,14 +67,11 @@ describe('RegisterForm', () => {
     expect(screen.getByLabelText('Contém a UF (ex: SP): atendido')).toBeInTheDocument();
   });
 
-  it('troca o tipo de documento entre CRM e CRMV', () => {
+  it('inicia com CRMV selecionado e CRM desabilitado', () => {
     render(<RegisterForm />);
 
-    expect(screen.getByRole('radio', { name: 'CRM' })).toBeChecked();
-
-    fireEvent.click(screen.getByRole('radio', { name: 'CRMV' }));
-
     expect(screen.getByRole('radio', { name: 'CRMV' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'CRM (Em breve)' })).toBeDisabled();
     expect(screen.getByLabelText('CRMV', { selector: 'input[type="text"]' })).toBeInTheDocument();
   });
 
@@ -94,7 +91,6 @@ describe('RegisterForm', () => {
       target: { value: 'Senha@123' },
     });
 
-    fireEvent.click(screen.getByRole('radio', { name: 'CRMV' }));
     fireEvent.click(screen.getByRole('checkbox'));
 
     fireEvent.click(screen.getByRole('button', { name: 'Criar Conta e Iniciar Teste' }));

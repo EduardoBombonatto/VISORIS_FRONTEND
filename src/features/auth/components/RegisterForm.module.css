@@ -81,6 +81,17 @@
   box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-primary) 25%, transparent);
 }
 
+.segmentDisabled {
+  cursor: not-allowed;
+}
+
+.segmentDisabled span {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background-color: #f3f4f6;
+  color: #9ca3af;
+}
+
 .termsLink {
   color: var(--color-primary);
   text-decoration: underline;
