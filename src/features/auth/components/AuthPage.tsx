@@ -47,16 +47,24 @@ export default function AuthPage() {
             <span className={styles.brand}>EndoCloud</span>
           </div>
 
-          <div className={styles.tabs}>
+          <div className={styles.tabs} role="tablist" aria-label="Modo de acesso">
             <button
+              id="auth-tab-login"
               type="button"
+              role="tab"
+              aria-selected={activeTab === 'login'}
+              aria-controls="auth-tabpanel"
               className={`${styles.tab} ${activeTab === 'login' ? styles.tabActive : ''}`}
               onClick={() => setActiveTab('login')}
             >
               Entrar
             </button>
             <button
+              id="auth-tab-register"
               type="button"
+              role="tab"
+              aria-selected={activeTab === 'register'}
+              aria-controls="auth-tabpanel"
               className={`${styles.tab} ${activeTab === 'register' ? styles.tabActive : ''}`}
               onClick={() => setActiveTab('register')}
             >
@@ -64,7 +72,13 @@ export default function AuthPage() {
             </button>
           </div>
 
-          <div className={styles.formPanel} key={activeTab}>
+          <div
+            id="auth-tabpanel"
+            role="tabpanel"
+            aria-labelledby={activeTab === 'login' ? 'auth-tab-login' : 'auth-tab-register'}
+            className={styles.formPanel}
+            key={activeTab}
+          >
             {activeTab === 'login' ? <LoginForm /> : <RegisterForm />}
           </div>
         </div>

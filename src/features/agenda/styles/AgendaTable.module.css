@@ -1,0 +1,394 @@
+.agendaList {
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  overflow: auto;
+  max-inline-size: 100%;
+  container-type: inline-size;
+}
+
+.feedbackBanner {
+  padding: 12px 24px;
+  background-color: #ecfdf5;
+  color: #065f46;
+  border-bottom: 1px solid #d1fae5;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+  --label-2: 'Paciente (Pet)';
+  --label-3: 'Local / Procedimento';
+  --label-4: 'Financeiro';
+  --label-5: 'Status';
+  --label-6: 'Ação';
+}
+
+.table thead {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+}
+
+.table thead th {
+  background-color: #f9fafb;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.colTime {
+  width: 90px;
+}
+
+.colStatus {
+  width: 160px;
+}
+
+.colAction {
+  width: 150px;
+  text-align: center;
+}
+
+.dataRow {
+  transition: background-color 0.2s ease;
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto 76px;
+}
+
+@supports not (content-visibility: auto) {
+  .dataRow {
+    contain: layout style paint;
+  }
+}
+
+.dataRow th,
+.dataRow td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+}
+
+.dataRow:last-child th,
+.dataRow:last-child td {
+  border-bottom: none;
+}
+
+.dataRow:hover {
+  background-color: #f9fafb;
+}
+
+.rowPendingHighlight {
+  background-color: #fffbeb;
+}
+
+.rowPendingHighlight:hover {
+  background-color: #fef3c7;
+}
+
+.time {
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.primaryText {
+  font-weight: 600;
+  color: #111827;
+}
+
+.secondaryText {
+  font-size: 0.875rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: #9ca3af;
+}
+
+/* Status Badges */
+.statusContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.statusBadge::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.badgeRealizado {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+.badgeRealizado::before {
+  background-color: #3b82f6;
+}
+
+.badgePendente {
+  background-color: #fffbeb;
+  color: #b45309;
+}
+.badgePendente::before {
+  background-color: #f59e0b;
+}
+
+.badgeConcluido {
+  background-color: #ecfdf5;
+  color: #059669;
+}
+.badgeConcluido::before {
+  background-color: #10b981;
+}
+
+.badgeAguardando {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+.badgeAguardando::before {
+  background-color: #9ca3af;
+}
+
+/* Payment Tags */
+.payTag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.payPaid {
+  background-color: #d1fae5;
+  color: #047857;
+  border: 1px solid #6ee7b7;
+}
+
+.payUnpaid {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+.payInsurance {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+}
+
+/* Action Buttons */
+.actionCell {
+  text-align: center;
+}
+
+.btnAction {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  width: 100%;
+}
+
+.btnEmptyAction {
+  width: auto;
+  margin-top: 8px;
+  padding: 10px 20px;
+}
+
+.btnAction:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnStart {
+  background-color: #ecfdf5;
+  color: #059669;
+}
+.btnStart:hover:not(:disabled) {
+  background-color: #d1fae5;
+}
+
+.btnView {
+  background-color: #ffffff;
+  color: #4b5563;
+  border-color: #d1d5db;
+}
+.btnView:hover:not(:disabled) {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+/* Empty State */
+.emptyState {
+  padding: 64px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.emptyIcon {
+  font-size: 2.5rem;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+.emptyTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.emptyText {
+  font-size: 0.875rem;
+  color: #6b7280;
+  max-width: 400px;
+}
+
+/* Skeleton Loading */
+.skeletonRow td {
+  padding: 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.skeletonBlock {
+  height: 16px;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .skeletonBlock {
+    animation: pulse 1.5s infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Responsive Stacked Card Layout via Container Query */
+@container (width < 720px) {
+  .table,
+  .table thead,
+  .table tbody,
+  .table tr,
+  .table th,
+  .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table thead {
+    display: none;
+  }
+
+  .dataRow {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 12px 16px;
+  }
+
+  .dataRow th,
+  .dataRow td {
+    padding: 6px 0;
+    border-bottom: none;
+    text-align: left;
+  }
+
+  .dataRow th {
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #e5e7eb;
+    margin-bottom: 6px;
+  }
+
+  .dataRow td:nth-child(2)::before {
+    content: var(--label-2) ': ';
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 2px;
+  }
+
+  .dataRow td:nth-child(3)::before {
+    content: var(--label-3) ': ';
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 2px;
+  }
+
+  .dataRow td:nth-child(4)::before {
+    content: var(--label-4) ': ';
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 2px;
+  }
+
+  .dataRow td:nth-child(5)::before {
+    content: var(--label-5) ': ';
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 2px;
+  }
+
+  .dataRow td:nth-child(6) {
+    padding-top: 10px;
+  }
+}

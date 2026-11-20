@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
 import { PatientResponse } from '@/api/index.schemas';
 import { usePatientsUpdate, getPatientsListQueryKey } from '@/api/patients/patients';
+import NativeDialog from '@/components/ui/NativeDialog';
 import { patientUpdateSchema, PatientUpdateFormData } from '../schemas/patient.schema';
 import styles from '../styles/EditPatientModal.module.css';
 
@@ -24,6 +25,7 @@ export function EditPatientModal({
   onClose,
   onSuccess,
 }: EditPatientModalProps) {
+  const titleId = useId();
   const queryClient = useQueryClient();
   const updatePatient = usePatientsUpdate();
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -120,7 +122,7 @@ export function EditPatientModal({
       });
 
       queryClient.invalidateQueries({
-        queryKey: getPatientsListQueryKey({ clientId: clientId as unknown as number }),
+        queryKey: getPatientsListQueryKey({ clientId }),
       });
       onSuccess?.();
       onClose();
@@ -130,154 +132,157 @@ export function EditPatientModal({
   };
 
   return (
-    <div
-      className={styles.overlay}
-      onClick={(e) => {
-        if (e.target === e.currentTarget && !isSubmitting) onClose();
-      }}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="edit-patient-modal-title"
+    <NativeDialog
+      open={open}
+      onClose={onClose}
+      dismissible={!isSubmitting}
+      ariaLabelledBy={titleId}
+      className={styles.modalContent}
     >
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.modalHeader}>
-          <h2 id="edit-patient-modal-title" className={styles.modalTitle}>
-            Editar Paciente ({patient.name})
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className={styles.closeButton}
-            aria-label="Fechar"
-            disabled={isSubmitting}
+      <div className={styles.modalHeader}>
+        <h2 id={titleId} className={styles.modalTitle}>
+          Editar Paciente ({patient.name})
+        </h2>
+        <button
+          type="button"
+          onClick={onClose}
+          className={styles.closeButton}
+          aria-label="Fechar"
+          disabled={isSubmitting}
+        >
+          <svg
+            width="20"
+            height="20"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
           >
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
 
-        <div className={styles.modalBody}>
-          <form onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
-            {globalError && <div className={styles.globalError}>{globalError}</div>}
+      <div className={styles.modalBody}>
+        <form onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
+          {globalError && <div className={styles.globalError}>{globalError}</div>}
 
-            <div className={styles.grid}>
-              <div className={styles.field}>
-                <label htmlFor="editPatientSpecies" className={styles.label}>
-                  Espécie *
-                </label>
-                <select
-                  id="editPatientSpecies"
-                  {...register('species')}
-                  className={styles.input}
-                  disabled={isSubmitting}
-                >
-                  <option value="Canino">Canino (Cachorro)</option>
-                  <option value="Felino">Felino (Gato)</option>
-                  <option value="Equino">Equino (Cavalo)</option>
-                  <option value="Bovino">Bovino</option>
-                  <option value="Ave">Ave</option>
-                  <option value="Roedor">Roedor</option>
-                  <option value="Réptil">Réptil</option>
-                  <option value="Outro">Outro</option>
-                </select>
-                {errors.species && <p className={styles.errorText}>{errors.species.message}</p>}
-              </div>
-
-              <div className={styles.field}>
-                <label htmlFor="editPatientName" className={styles.label}>
-                  Nome do Pet *
-                </label>
-                <input
-                  id="editPatientName"
-                  {...register('name')}
-                  placeholder="Ex: Rex, Thor, Mel..."
-                  className={styles.input}
-                  disabled={isSubmitting}
-                />
-                {errors.name && <p className={styles.errorText}>{errors.name.message}</p>}
-              </div>
-
-              <div className={styles.field}>
-                <label htmlFor="editPatientBirthDate" className={styles.label}>
-                  Data de Nascimento
-                </label>
-                <input
-                  id="editPatientBirthDate"
-                  type="date"
-                  {...register('birthDate')}
-                  onChange={handleBirthDateChange}
-                  className={styles.input}
-                  disabled={isSubmitting}
-                />
-                {errors.birthDate && <p className={styles.errorText}>{errors.birthDate.message}</p>}
-              </div>
-
-              <div className={styles.field}>
-                <label htmlFor="editPatientAge" className={styles.label}>
-                  Ou Idade aproximada
-                </label>
-                <input
-                  id="editPatientAge"
-                  {...register('age')}
-                  placeholder="Ex: 3 anos, 6 meses..."
-                  className={styles.input}
-                  disabled={isSubmitting}
-                />
-                <span className={styles.helperText}>Informe a data de nascimento ou a idade.</span>
-              </div>
-
-              <div className={styles.field}>
-                <label htmlFor="editPatientBreed" className={styles.label}>
-                  Raça
-                </label>
-                <input
-                  id="editPatientBreed"
-                  {...register('breed')}
-                  placeholder="Ex: SRD, Poodle, Siamês..."
-                  className={styles.input}
-                  disabled={isSubmitting}
-                />
-                {errors.breed && <p className={styles.errorText}>{errors.breed.message}</p>}
-              </div>
-
-              <div className={styles.field}>
-                <label htmlFor="editPatientCoatColor" className={styles.label}>
-                  Cor da Pelagem
-                </label>
-                <input
-                  id="editPatientCoatColor"
-                  {...register('coatColor')}
-                  placeholder="Ex: Caramelo, Preto, Branco..."
-                  className={styles.input}
-                  disabled={isSubmitting}
-                />
-                {errors.coatColor && <p className={styles.errorText}>{errors.coatColor.message}</p>}
-              </div>
-            </div>
-
-            <div className={styles.actions}>
-              <button
-                type="button"
-                onClick={onClose}
-                className={styles.btnCancel}
+          <div className={styles.grid}>
+            <div className={styles.field}>
+              <label htmlFor="editPatientSpecies" className={styles.label}>
+                Espécie *
+              </label>
+              <select
+                id="editPatientSpecies"
+                {...register('species')}
+                className={styles.input}
                 disabled={isSubmitting}
               >
-                Cancelar
-              </button>
-              <button type="submit" className={styles.btnSubmit} disabled={isSubmitting}>
-                {isSubmitting && <div className={styles.spinner} />}
-                <span>{isSubmitting ? 'Salvando...' : 'Salvar Alterações'}</span>
-              </button>
+                <option value="Canino">Canino (Cachorro)</option>
+                <option value="Felino">Felino (Gato)</option>
+                <option value="Equino">Equino (Cavalo)</option>
+                <option value="Bovino">Bovino</option>
+                <option value="Ave">Ave</option>
+                <option value="Roedor">Roedor</option>
+                <option value="Réptil">Réptil</option>
+                <option value="Outro">Outro</option>
+              </select>
+              {errors.species && <p className={styles.errorText}>{errors.species.message}</p>}
             </div>
-          </form>
-        </div>
+
+            <div className={styles.field}>
+              <label htmlFor="editPatientName" className={styles.label}>
+                Nome do Pet *
+              </label>
+              <input
+                id="editPatientName"
+                {...register('name')}
+                placeholder="Ex: Rex, Thor, Mel..."
+                className={styles.input}
+                disabled={isSubmitting}
+              />
+              {errors.name && <p className={styles.errorText}>{errors.name.message}</p>}
+            </div>
+
+            <div className={styles.field}>
+              <label htmlFor="editPatientBirthDate" className={styles.label}>
+                Data de Nascimento
+              </label>
+              <input
+                id="editPatientBirthDate"
+                type="date"
+                {...register('birthDate')}
+                onChange={handleBirthDateChange}
+                className={styles.input}
+                disabled={isSubmitting}
+              />
+              {errors.birthDate && <p className={styles.errorText}>{errors.birthDate.message}</p>}
+            </div>
+
+            <div className={styles.field}>
+              <label htmlFor="editPatientAge" className={styles.label}>
+                Ou Idade aproximada
+              </label>
+              <input
+                id="editPatientAge"
+                {...register('age')}
+                placeholder="Ex: 3 anos, 6 meses..."
+                className={styles.input}
+                disabled={isSubmitting}
+              />
+              <span className={styles.helperText}>Informe a data de nascimento ou a idade.</span>
+            </div>
+
+            <div className={styles.field}>
+              <label htmlFor="editPatientBreed" className={styles.label}>
+                Raça
+              </label>
+              <input
+                id="editPatientBreed"
+                {...register('breed')}
+                placeholder="Ex: SRD, Poodle, Siamês..."
+                className={styles.input}
+                disabled={isSubmitting}
+              />
+              {errors.breed && <p className={styles.errorText}>{errors.breed.message}</p>}
+            </div>
+
+            <div className={styles.field}>
+              <label htmlFor="editPatientCoatColor" className={styles.label}>
+                Cor da Pelagem
+              </label>
+              <input
+                id="editPatientCoatColor"
+                {...register('coatColor')}
+                placeholder="Ex: Caramelo, Preto, Branco..."
+                className={styles.input}
+                disabled={isSubmitting}
+              />
+              {errors.coatColor && <p className={styles.errorText}>{errors.coatColor.message}</p>}
+            </div>
+          </div>
+
+          <div className={styles.actions}>
+            <button
+              type="button"
+              onClick={onClose}
+              className={styles.btnCancel}
+              disabled={isSubmitting}
+            >
+              Cancelar
+            </button>
+            <button type="submit" className={styles.btnSubmit} disabled={isSubmitting}>
+              {isSubmitting && <div className={styles.spinner} aria-hidden="true" />}
+              <span>{isSubmitting ? 'Salvando...' : 'Salvar Alterações'}</span>
+            </button>
+          </div>
+        </form>
       </div>
-    </div>
+    </NativeDialog>
   );
 }

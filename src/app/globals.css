@@ -59,3 +59,64 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+#app-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Top-layer modal scroll containment (native <dialog>) */
+dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+/* ==========================================================================
+   Configurações de Impressão e Exportação para PDF (Folha A4 Fiel)
+   ========================================================================== */
+@page {
+  size: A4;
+  margin: 2cm;
+  @bottom-center {
+    content: "Página " counter(page) " de " counter(pages);
+    font-size: 9pt;
+    color: #71717a;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+    color: #18181b !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Oculta toda a árvore da aplicação no modo impressão, evitando qualquer sobreposição */
+  #app-content {
+    display: none !important;
+  }
+
+  .no-print,
+  button,
+  header,
+  aside,
+  nav {
+    display: none !important;
+  }
+}

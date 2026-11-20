@@ -36,6 +36,20 @@ describe('Sidebar', () => {
     expect(screen.getByRole('link', { name: 'Dashboard' }).className).toContain('active');
   });
 
+  it('renderiza o item Laudos na barra lateral', () => {
+    render(<Sidebar />);
+    const link = screen.getByRole('link', { name: 'Laudos' });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute('href', '/reports');
+  });
+
+  it('renderiza o item Templates com link correto', () => {
+    render(<Sidebar />);
+    const link = screen.getByRole('link', { name: 'Templates' });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute('href', '/templates');
+  });
+
   it('alterna o menu com o botão hambúrguer', () => {
     render(<Sidebar />);
     const toggle = screen.getByRole('button', { name: /menu de navegação/i });

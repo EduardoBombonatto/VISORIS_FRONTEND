@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
+import NativeDialog from './NativeDialog';
 import styles from './Modal.module.css';
 
 interface ModalProps {
@@ -8,59 +9,39 @@ interface ModalProps {
   title: string;
   onClose: () => void;
   children: ReactNode;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  className?: string;
+  dismissible?: boolean;
 }
 
-export default function Modal({ open, title, onClose, children }: ModalProps) {
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-    closeButtonRef.current?.focus();
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      previouslyFocused?.focus();
-    };
-  }, [open, onClose]);
-
-  if (!open) return null;
+export default function Modal({
+  open,
+  title,
+  onClose,
+  children,
+  size = 'md',
+  className = '',
+  dismissible = true,
+}: ModalProps) {
+  const titleId = useId();
 
   return (
-    <div
-      className={styles.overlay}
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
+    <NativeDialog
+      open={open}
+      onClose={onClose}
+      dismissible={dismissible}
+      ariaLabelledBy={titleId}
+      className={`${styles.dialog} ${styles[`size_${size}`] || ''} ${className}`}
     >
-      <div
-        className={styles.dialog}
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        onClick={(event) => event.stopPropagation()}
-      >
-        <header className={styles.header}>
-          <h2 className={styles.title}>{title}</h2>
-          <button
-            ref={closeButtonRef}
-            type="button"
-            className={styles.close}
-            aria-label="Fechar"
-            onClick={onClose}
-          >
-            ×
-          </button>
-        </header>
-        <div className={styles.body}>{children}</div>
-      </div>
-    </div>
+      <header className={styles.header}>
+        <h2 id={titleId} className={styles.title}>
+          {title}
+        </h2>
+        <button type="button" className={styles.close} aria-label="Fechar" onClick={onClose}>
+          ×
+        </button>
+      </header>
+      <div className={styles.body}>{children}</div>
+    </NativeDialog>
   );
 }

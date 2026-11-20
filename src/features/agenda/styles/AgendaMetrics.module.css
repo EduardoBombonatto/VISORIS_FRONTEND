@@ -1,0 +1,71 @@
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.statCard {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+}
+
+.cardPendingPayments {
+  border-left: 4px solid #ef4444;
+}
+
+.statTitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.statValue {
+  font-size: 1.875rem;
+  color: #111827;
+  font-weight: 700;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  line-height: 1.2;
+}
+
+.statSub {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.valueAmber {
+  color: #f59e0b;
+}
+
+.valueEmerald {
+  color: #10b981;
+}
+
+.valueRed {
+  color: #ef4444;
+}

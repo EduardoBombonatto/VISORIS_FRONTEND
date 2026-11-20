@@ -24,17 +24,21 @@ describe('AuthPage', () => {
   it('alterna para o formulário de cadastro ao clicar em Criar Conta', () => {
     render(<AuthPage />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Criar Conta' }));
+    const registerTab = screen.getByRole('tab', { name: 'Criar Conta' });
+    fireEvent.click(registerTab);
 
+    expect(registerTab).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByText('Crie sua conta')).toBeInTheDocument();
   });
 
   it('volta ao formulário de login ao clicar em Entrar', () => {
     render(<AuthPage />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Criar Conta' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Entrar' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Criar Conta' }));
+    const loginTab = screen.getByRole('tab', { name: 'Entrar' });
+    fireEvent.click(loginTab);
 
+    expect(loginTab).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByText('Bem-vindo de volta!')).toBeInTheDocument();
   });
 });

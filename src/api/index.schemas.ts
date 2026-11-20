@@ -228,6 +228,182 @@ export interface UpdatePatientRequest {
   biological_details: UpdatePatientRequestBiologicalDetails;
 }
 
+export type ExamStatus = (typeof ExamStatus)[keyof typeof ExamStatus];
+
+export const ExamStatus = {
+  SCHEDULED: 'SCHEDULED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export type ReportStatus = (typeof ReportStatus)[keyof typeof ReportStatus];
+
+export const ReportStatus = {
+  PENDING: 'PENDING',
+  DRAFT: 'DRAFT',
+  COMPLETED: 'COMPLETED',
+} as const;
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus];
+
+export const PaymentStatus = {
+  UNPAID: 'UNPAID',
+  PAID: 'PAID',
+  INSURANCE: 'INSURANCE',
+} as const;
+
+export interface CreateAppointmentRequest {
+  clinic_id: string;
+  patient_id: string;
+  scheduled_at: string;
+  procedure_name: string;
+  /** @nullable */
+  price?: number | null;
+  payment_status?: PaymentStatus;
+}
+
+export interface UpdateAppointmentStatusRequest {
+  exam_status?: ExamStatus;
+  report_status?: ReportStatus;
+  payment_status?: PaymentStatus;
+}
+
+export interface AppointmentResponse {
+  id: string;
+  userId: string;
+  clinicId: string;
+  patientId: string;
+  scheduledAt: string;
+  procedureName: string;
+  examStatus: ExamStatus;
+  reportStatus: ReportStatus;
+  paymentStatus: PaymentStatus;
+  /** @nullable */
+  price?: number | null;
+  createdAt: string;
+  updatedAt: string;
+  patientName: string;
+  patientType: string;
+  clientName: string;
+  clinicName: string;
+}
+
+export interface CreateAppointmentResponse {
+  appointment: AppointmentResponse;
+}
+
+export interface AppointmentListResponse {
+  appointments: AppointmentResponse[];
+}
+
+export interface CreateTemplateRequest {
+  /** @maxLength 255 */
+  title: string;
+  content: string;
+}
+
+export interface CreateTemplateResponse {
+  id: string;
+}
+
+export interface UpdateTemplateRequest {
+  /**
+   * @maxLength 255
+   * @nullable
+   */
+  title?: string | null;
+  /** @nullable */
+  content?: string | null;
+}
+
+export interface TemplateSummaryResponse {
+  id: string;
+  title: string;
+  createdAt: string;
+}
+
+export interface TemplateListResponse {
+  templates: TemplateSummaryResponse[];
+}
+
+export interface TemplateDetailResponse {
+  id: string;
+  userId: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateReportRequest {
+  /** ID do agendamento (Snowflake). */
+  appointment_id: string;
+  /** Conteúdo rico/HTML do laudo. */
+  content: string;
+}
+
+export interface UpdateReportRequest {
+  /** Conteúdo rico/HTML atualizado do laudo. */
+  content: string;
+}
+
+export interface ReportImageRequest {
+  /**
+   * URL da imagem do exame (máximo 1024 caracteres).
+   * @maxLength 1024
+   */
+  image_url: string;
+  /**
+   * Legenda descritiva opcional da imagem (máximo 500 caracteres).
+   * @maxLength 500
+   * @nullable
+   */
+  caption?: string | null;
+  /** Ordem de exibição da imagem no laudo. */
+  display_order?: number;
+}
+
+export interface ReportImageResponse {
+  id: string;
+  reportId: string;
+  imageUrl: string;
+  /** @nullable */
+  caption?: string | null;
+  displayOrder: number;
+  createdAt: string;
+}
+
+/**
+ * @nullable
+ */
+export type ReportResponsePatientSnapshot = { [key: string]: unknown } | null;
+
+/**
+ * @nullable
+ */
+export type ReportResponseClinicSnapshot = { [key: string]: unknown } | null;
+
+export interface ReportResponse {
+  id: string;
+  appointmentId: string;
+  userId: string;
+  /** @nullable */
+  attendanceLocationName?: string | null;
+  /** @nullable */
+  patientSnapshot?: ReportResponsePatientSnapshot;
+  /** @nullable */
+  clinicSnapshot?: ReportResponseClinicSnapshot;
+  content: string;
+  /** @nullable */
+  pdfUrl?: string | null;
+  /** @nullable */
+  signedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  images: ReportImageResponse[];
+}
+
 export type AuthLogin200 = {
   erro: boolean;
   message: string;
@@ -830,9 +1006,9 @@ export type ClientsDelete500 = {
 
 export type PatientsListParams = {
   /**
-   * ID do cliente/tutor.
+   * ID do cliente/tutor (Snowflake).
    */
-  clientId: number;
+  clientId: string;
   limit?: number;
   offset?: number;
 };
@@ -1091,6 +1267,102 @@ export type PatientsDelete500 = {
   message: string;
   /** @nullable */
   data: PatientsDelete500Data;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type ListAppointmentsParams = {
+  /**
+   * Filtro de data/hora inicial (ISO 8601). Retorna agendamentos com scheduled_at >= startDate.
+   */
+  startDate?: string;
+  /**
+   * Filtro de data/hora final (ISO 8601). Retorna agendamentos com scheduled_at <= endDate.
+   */
+  endDate?: string;
+  /**
+   * Filtro opcional por ID da clínica.
+   */
+  clinicId?: string;
+};
+
+export type ListTemplates200 = {
+  erro: boolean;
+  message: string;
+  data: TemplateListResponse;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type CreateTemplate201 = {
+  erro: boolean;
+  message: string;
+  data: CreateTemplateResponse;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type GetTemplateById200 = {
+  erro: boolean;
+  message: string;
+  data: TemplateDetailResponse;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type UpdateTemplate200 = {
+  erro: boolean;
+  message: string;
+  data: TemplateDetailResponse;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type DeleteTemplate200 = {
+  erro: boolean;
+  message: string;
+  /** @nullable */
+  data: string | null;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type GetReportByAppointmentId200 = {
+  erro: boolean;
+  message: string;
+  data: ReportResponse;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type CreateReport201 = {
+  erro: boolean;
+  message: string;
+  data: ReportResponse;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type UpdateReport200 = {
+  erro: boolean;
+  message: string;
+  data: ReportResponse;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type AddReportImage201 = {
+  erro: boolean;
+  message: string;
+  data: ReportImageResponse;
+  httpcode: number;
+  timestamp: string;
+};
+
+export type SignReport200 = {
+  erro: boolean;
+  message: string;
+  data: ReportResponse;
   httpcode: number;
   timestamp: string;
 };

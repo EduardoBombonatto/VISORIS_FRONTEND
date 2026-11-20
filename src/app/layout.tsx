@@ -24,7 +24,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <SessionRestore />
-          {children}
+          <div id="app-content">{children}</div>
         </Providers>
       </body>
     </html>

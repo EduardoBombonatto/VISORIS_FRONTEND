@@ -1,0 +1,104 @@
+.dialog {
+  width: calc(100% - 32px);
+  max-width: 520px;
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: none;
+  border-radius: 16px;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  box-shadow: 0 20px 40px rgb(0 0 0 / 0.18);
+  overflow: hidden;
+  opacity: 0;
+  transition-property: opacity, transform, display, overlay;
+  transition-duration: 0.22s;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-behavior: allow-discrete;
+}
+
+.dialog[open] {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+}
+
+.dialog:modal {
+  overscroll-behavior: contain;
+}
+
+.dialog::backdrop {
+  background-color: rgb(15 23 42 / 0);
+  backdrop-filter: blur(0px);
+  overflow: hidden;
+  overscroll-behavior: contain;
+  transition-property: background-color, backdrop-filter, display, overlay;
+  transition-duration: 0.22s;
+  transition-timing-function: ease-out;
+  transition-behavior: allow-discrete;
+}
+
+.dialog[open]::backdrop {
+  background-color: rgb(15 23 42 / 0.55);
+  backdrop-filter: blur(4px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dialog {
+    transform: translateY(16px) scale(0.97);
+  }
+
+  .dialog[open] {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@starting-style {
+  .dialog[open] {
+    opacity: 0;
+  }
+
+  .dialog[open]::backdrop {
+    background-color: rgb(15 23 42 / 0);
+    backdrop-filter: blur(0px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @starting-style {
+    .dialog[open] {
+      transform: translateY(16px) scale(0.97);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog,
+  .dialog::backdrop {
+    transition-duration: 0.1s;
+  }
+}
+
+@media print {
+  .dialog,
+  .dialog[open] {
+    position: static !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: none !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    display: block !important;
+  }
+
+  .dialog::backdrop {
+    display: none !important;
+  }
+}

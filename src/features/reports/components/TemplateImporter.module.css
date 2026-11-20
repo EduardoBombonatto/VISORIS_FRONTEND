@@ -1,0 +1,104 @@
+.importerContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.selectRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.templateSelect {
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  font-size: 0.875rem;
+  font-family: inherit;
+  font-weight: 500;
+  color: #111827;
+  background-color: #ffffff;
+  min-width: 260px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 2px #d1fae5;
+  }
+
+  &:disabled {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+}
+
+.loadingHint {
+  font-size: 0.75rem;
+  color: #059669;
+  font-weight: 500;
+}
+
+.errorText {
+  font-size: 0.75rem;
+  color: #dc2626;
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.modalDescription {
+  font-size: 0.925rem;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btnCancel {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f9fafb;
+  }
+}
+
+.btnConfirm {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #10b981;
+  background-color: #10b981;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #059669;
+    border-color: #059669;
+  }
+}

@@ -1,0 +1,36 @@
+.container {
+  padding: 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.loadingWrapper,
+.errorWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  gap: 16px;
+  text-align: center;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
+}

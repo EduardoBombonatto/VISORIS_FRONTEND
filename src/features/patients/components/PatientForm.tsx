@@ -192,7 +192,7 @@ export function PatientForm({
       // 3. Success -> Invalidate queries
       queryClient.invalidateQueries({ queryKey: getClientsListQueryKey() });
       queryClient.invalidateQueries({
-        queryKey: getPatientsListQueryKey({ clientId: targetClientId as unknown as number }),
+        queryKey: getPatientsListQueryKey({ clientId: targetClientId }),
       });
 
       onSuccess();

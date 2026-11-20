@@ -43,8 +43,8 @@ export function PatientDetail({
   const [isDeletingPatient, setIsDeletingPatient] = useState(false);
 
   const { data: patientsResponse, isLoading: isLoadingPatients } = usePatientsList(
-    { clientId: (client ? client.id : '0') as unknown as number },
-    { query: { enabled: !!client } },
+    { clientId: client?.id ?? '' },
+    { query: { enabled: !!client?.id } },
   );
 
   const rawData = patientsResponse?.data;
@@ -145,7 +145,7 @@ export function PatientDetail({
       });
 
       queryClient.invalidateQueries({
-        queryKey: getPatientsListQueryKey({ clientId: client.id as unknown as number }),
+        queryKey: getPatientsListQueryKey({ clientId: client.id }),
       });
       setPatientToDelete(null);
     } catch {

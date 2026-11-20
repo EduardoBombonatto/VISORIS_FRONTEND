@@ -1,0 +1,554 @@
+.pdfDocumentSheet {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 2cm;
+  background-color: #ffffff;
+  box-sizing: border-box;
+  color: #18181b;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-size: 10pt;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px #e4e4e7;
+  border-radius: 4px;
+  position: relative;
+}
+
+/* ==========================================================================
+   Cabeçalho
+   ========================================================================== */
+.header {
+  border-bottom: 2px solid #27272a;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.headerTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.headerTable td {
+  vertical-align: top;
+}
+
+.doctorTitle {
+  margin: 0 0 5px 0;
+  font-size: 16pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #18181b;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  font-size: 9pt;
+  color: #52525b;
+  margin-top: 2px;
+}
+
+.clinicInfoCol {
+  text-align: right;
+  vertical-align: top;
+}
+
+.clinicBox {
+  background-color: #f4f4f5;
+  padding: 10px 15px;
+  border-radius: 4px;
+  display: inline-block;
+  text-align: right;
+}
+
+.clinicLabel {
+  font-size: 7.5pt;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #71717a;
+  letter-spacing: 0.04em;
+}
+
+.clinicName {
+  font-weight: bold;
+  color: #18181b;
+  font-size: 10pt;
+  margin-top: 2px;
+}
+
+.clinicLocation {
+  color: #52525b;
+  font-size: 9pt;
+  margin-top: 1px;
+}
+
+/* ==========================================================================
+   Snapshot de Identificação
+   ========================================================================== */
+.snapshot {
+  background-color: #fafafa;
+  border: 1px solid #e4e4e7;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 30px;
+}
+
+.snapshotTable {
+  width: 100%;
+  font-size: 9.5pt;
+  border-collapse: separate;
+  border-spacing: 0 5px;
+}
+
+.snapshotTable th {
+  text-align: left;
+  color: #71717a;
+  text-transform: uppercase;
+  font-size: 8pt;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding-bottom: 2px;
+  width: 33%;
+}
+
+.snapshotTable td {
+  padding-bottom: 10px;
+  font-weight: bold;
+  color: #27272a;
+}
+
+.subtext {
+  font-weight: normal;
+  color: #52525b;
+  font-size: 8.5pt;
+}
+
+/* ==========================================================================
+   Título do Laudo
+   ========================================================================== */
+.title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 13pt;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e4e4e7;
+  padding-bottom: 10px;
+  color: #18181b;
+  letter-spacing: 0.02em;
+}
+
+/* ==========================================================================
+   Conteúdo Clínico
+   ========================================================================== */
+.content {
+  font-size: 10pt;
+  color: #18181b;
+  line-height: 1.55;
+
+  & h2,
+  & h3,
+  & h4 {
+    margin-top: 16px;
+    margin-bottom: 5px;
+    color: #27272a;
+    font-size: 10.5pt;
+    font-weight: 700;
+  }
+
+  & p {
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: justify;
+  }
+
+  & strong {
+    font-weight: 700;
+    color: #18181b;
+  }
+
+  & ul,
+  & ol {
+    margin: 6px 0 10px 20px;
+  }
+
+  & li {
+    margin-bottom: 3px;
+  }
+
+  & :global(.report-figure) {
+    margin: 10px 1%;
+    padding: 8px;
+    border: 1px solid #e4e4e7;
+    border-radius: 4px;
+    background-color: #fafafa;
+    text-align: center;
+    box-sizing: border-box;
+    display: inline-block;
+    vertical-align: top;
+    width: 48%;
+    max-width: 48%;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  & :global(.report-figure:only-of-type) {
+    display: block;
+    max-width: 75%;
+    margin: 12px auto;
+  }
+
+  & :global(.report-figure-img) {
+    max-width: 100%;
+    max-height: 170px;
+    margin: 0 auto 6px auto;
+    display: block;
+    object-fit: contain;
+    border-radius: 4px;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  & :global(.report-figure-caption) {
+    font-size: 8.5pt;
+    color: #52525b;
+    margin-top: 6px;
+  }
+
+  & :global(.report-page-break) {
+    margin: 32px -2cm;
+    padding: 14px 0;
+    background-color: #f4f4f5;
+    border-top: 2px dashed #d4d4d8;
+    border-bottom: 2px dashed #d4d4d8;
+    text-align: center;
+    display: block;
+    clear: both;
+  }
+
+  & :global(.report-page-break-label) {
+    display: inline-block;
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #71717a;
+    background: #ffffff;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    border: 1px solid #e4e4e7;
+  }
+}
+
+/* ==========================================================================
+   Múltiplas Folhas e Cabeçalho de Continuação
+   ========================================================================== */
+.multiSheetWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+  align-items: center;
+}
+
+.multiPageSheet {
+  margin-bottom: 12px;
+}
+
+.previewSheetBadge {
+  position: absolute;
+  top: -14px;
+  left: 24px;
+  background-color: #27272a;
+  color: #ffffff;
+  font-size: 7.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 12px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+  user-select: none;
+}
+
+.continuationHeader {
+  border-bottom: 2px solid #27272a;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.continuationTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+.continuationDoctor {
+  font-size: 10pt;
+  font-weight: 700;
+  color: #18181b;
+  text-transform: uppercase;
+}
+
+.continuationClinic {
+  font-size: 9.5pt;
+  font-weight: 600;
+  color: #27272a;
+}
+
+.continuationSubRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 8.5pt;
+  color: #52525b;
+}
+
+.continuationPageTag {
+  font-size: 7.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #27272a;
+  background-color: #f4f4f5;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #e4e4e7;
+}
+
+.sheetContinuationFooter {
+  margin-top: 36px;
+  padding-top: 10px;
+  border-top: 1px dashed #e4e4e7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 8.5pt;
+  color: #71717a;
+  font-style: italic;
+}
+
+.sheetEndFooter {
+  margin-top: 36px;
+  padding-top: 10px;
+  border-top: 1px dashed #e4e4e7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 8.5pt;
+  color: #71717a;
+}
+
+/* ==========================================================================
+   Galeria de Imagens
+   ========================================================================== */
+.gallery {
+  margin-top: 30px;
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.gallery td {
+  width: 50%;
+  padding: 10px;
+  vertical-align: top;
+}
+
+.imgBox {
+  background-color: #f4f4f5;
+  border: 1px solid #e4e4e7;
+  height: 180px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9pt;
+  border-radius: 4px;
+  overflow: hidden;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.imgReal {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.imgPlaceholder {
+  background-color: #27272a;
+  color: #a1a1aa;
+  height: 180px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9pt;
+  border-radius: 4px;
+}
+
+.imgCaption {
+  font-size: 8.5pt;
+  color: #52525b;
+  margin-top: 8px;
+}
+
+/* ==========================================================================
+   Rodapé e Assinatura
+   ========================================================================== */
+.footer {
+  margin-top: 60px;
+  text-align: center;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.signatureLine {
+  width: 250px;
+  border-top: 1px solid #71717a;
+  margin: 0 auto 8px auto;
+}
+
+.footer p {
+  margin: 2px;
+  font-size: 9.5pt;
+}
+
+.doctorNameFooter {
+  font-weight: 700;
+  color: #18181b;
+}
+
+.doctorSubtitleFooter {
+  color: #52525b;
+}
+
+.signatureMeta {
+  font-size: 8pt !important;
+  margin-top: 15px !important;
+  color: #71717a;
+}
+
+.signatureMetaDraft {
+  font-size: 8pt !important;
+  margin-top: 15px !important;
+  color: #d97706;
+}
+
+.hash {
+  font-family: monospace;
+  font-size: 8pt;
+  color: #a1a1aa;
+  margin-top: 10px;
+}
+
+/* ==========================================================================
+   Ajustes de Impressão (@media print)
+   ========================================================================== */
+@media print {
+  .multiSheetWrapper {
+    display: block !important;
+    gap: 0 !important;
+    width: 100% !important;
+  }
+
+  .previewSheetBadge {
+    display: none !important;
+  }
+
+  .sheetContinuationFooter,
+  .sheetEndFooter {
+    display: none !important;
+  }
+
+  .pdfDocumentSheet {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    display: block !important;
+    position: static !important;
+  }
+
+  .pdfDocumentSheet:not(:last-child) {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .continuationHeader {
+    border-bottom: 2px solid #27272a !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .header {
+    border-bottom: 2px solid #27272a !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .clinicBox {
+    background-color: #f4f4f5 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .snapshot {
+    background-color: #fafafa !important;
+    border: 1px solid #e4e4e7 !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .title {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .content h2,
+  .content h3,
+  .content h4 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .gallery,
+  .gallery tr,
+  .gallery td,
+  .imgBox,
+  :global(.report-figure),
+  .footer {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  :global(.report-page-break) {
+    page-break-before: always !important;
+    break-before: page !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    visibility: hidden !important;
+    display: block !important;
+    clear: both !important;
+  }
+
+  :global(.report-page-break-label) {
+    display: none !important;
+  }
+}

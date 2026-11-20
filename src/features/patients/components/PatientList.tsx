@@ -34,34 +34,43 @@ export function PatientList({
         <div className={styles.titleRow}>
           <h2 className={styles.title}>Tutores e Pacientes</h2>
           <button
+            type="button"
             onClick={onAddPatient}
             className={styles.addButton}
             title="Adicionar Tutor/Paciente"
+            aria-label="Adicionar Tutor ou Paciente"
           >
             +
           </button>
         </div>
 
-        <div className={styles.searchWrapper}>
-          <span className={styles.searchIcon}>🔍</span>
+        <search className={styles.searchWrapper}>
+          <span className={styles.searchIcon} aria-hidden="true">
+            🔍
+          </span>
           <input
-            type="text"
+            type="search"
             placeholder="Procurar tutor por nome..."
+            aria-label="Procurar tutor por nome"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={styles.searchInput}
           />
-        </div>
+        </search>
 
         <div className={styles.filters}>
           <button
+            type="button"
             onClick={() => setActiveFilter('Todos')}
+            aria-pressed={activeFilter === 'Todos'}
             className={`${styles.filterChip} ${activeFilter === 'Todos' ? styles.filterChipActive : ''}`}
           >
             Todos
           </button>
           <button
+            type="button"
             onClick={() => setActiveFilter('Atendidos Hoje')}
+            aria-pressed={activeFilter === 'Atendidos Hoje'}
             className={`${styles.filterChip} ${activeFilter === 'Atendidos Hoje' ? styles.filterChipActive : ''}`}
           >
             Atendidos Hoje
@@ -81,21 +90,26 @@ export function PatientList({
               .toUpperCase() || 'CLI';
 
           return (
-            <div
+            <button
               key={client.id}
+              type="button"
               onClick={() => onSelectClient(client)}
+              aria-pressed={isSelected}
               className={`${styles.patientItem} ${isSelected ? styles.patientItemSelected : ''}`}
             >
-              <div className={`${styles.avatar} ${isSelected ? styles.avatarSelected : ''}`}>
+              <span
+                className={`${styles.avatar} ${isSelected ? styles.avatarSelected : ''}`}
+                aria-hidden="true"
+              >
                 {initials}
-              </div>
-              <div className={styles.patientInfo}>
-                <div className={styles.patientName}>{client.fullName}</div>
-                <div className={styles.patientSub}>
+              </span>
+              <span className={styles.patientInfo}>
+                <span className={styles.patientName}>{client.fullName}</span>
+                <span className={styles.patientSub}>
                   {client.email || client.phone || 'Sem contato'}
-                </div>
-              </div>
-            </div>
+                </span>
+              </span>
+            </button>
           );
         })}
         {filteredClients.length === 0 && (

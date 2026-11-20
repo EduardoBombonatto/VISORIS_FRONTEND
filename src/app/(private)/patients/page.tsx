@@ -6,13 +6,14 @@ import { PatientDetail } from '@/features/patients/components/PatientDetail';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { PatientModal } from '@/features/patients/components/PatientModal';
 import { useClientsList } from '@/api/clients/clients';
+import { extractClientsList } from '@/features/agenda/utils/formatters';
 import styles from './page.module.css';
 
-import { ClientListResponse, ClientResponse } from '@/api/index.schemas';
+import { ClientResponse } from '@/api/index.schemas';
 
 export default function PatientsPage() {
-  const { data: clientsResponse, isLoading, error } = useClientsList();
-  const clients = (clientsResponse?.data?.data as ClientListResponse)?.clients || [];
+  const { data: clientsResponse, isLoading, error, refetch } = useClientsList();
+  const clients = extractClientsList(clientsResponse);
 
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(undefined);
   const [modalClient, setModalClient] = useState<ClientResponse | undefined>(undefined);
@@ -63,6 +64,9 @@ export default function PatientsPage() {
         ) : error ? (
           <section className={`${styles.listSkeletonContainer} ${styles.listSkeletonError}`}>
             <p className={styles.errorMessage}>Erro ao carregar tutores.</p>
+            <button type="button" onClick={() => refetch()} className={styles.retryButton}>
+              Tentar novamente
+            </button>
           </section>
         ) : (
           <PatientList

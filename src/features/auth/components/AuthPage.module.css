@@ -1,6 +1,7 @@
 .page {
   display: flex;
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: #f9fafb;
 }
 
@@ -177,7 +178,13 @@
 }
 
 .formPanel {
-  animation: fadeIn 0.4s ease;
+  will-change: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .formPanel {
+    animation: fadeIn 0.3s ease;
+  }
 }
 
 @keyframes fadeIn {
