@@ -313,6 +313,9 @@ describe('ReportWorkspace Integration', () => {
 
     expect(screen.getByRole('dialog', { name: /finalizar e assinar laudo/i })).toBeInTheDocument();
 
+    const checkboxes = screen.getAllByRole('checkbox');
+    checkboxes.forEach((cb) => fireEvent.click(cb));
+
     fireEvent.click(screen.getByRole('button', { name: /confirmar e assinar/i }));
 
     await waitFor(() => {

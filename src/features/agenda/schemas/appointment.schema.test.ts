@@ -80,6 +80,19 @@ describe('appointment.schema', () => {
       expect(result.success).toBe(false);
     });
 
+    it('rejects invalid nonempty price strings', () => {
+      const result = createAppointmentSchema.safeParse({
+        clinic_id: 'c1',
+        patient_id: 'p1',
+        scheduledDate: '2026-09-16',
+        scheduledTime: '08:00',
+        procedure_name: 'Exame',
+        price: '450,0x',
+      });
+
+      expect(result.success).toBe(false);
+    });
+
     it('defaults payment_status to UNPAID and accepts INSURANCE', () => {
       const resultDefault = createAppointmentSchema.safeParse({
         clinic_id: 'c1',

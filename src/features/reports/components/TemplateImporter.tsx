@@ -9,7 +9,8 @@ import styles from './TemplateImporter.module.css';
 
 function hasMeaningfulHtmlContent(html: string): boolean {
   const stripped = html.replace(/<[^>]*>/g, '').trim();
-  return stripped.length > 0;
+  if (stripped.length > 0) return true;
+  return /<(img|figure|svg|video|audio|iframe|table|hr|canvas)\b/i.test(html);
 }
 
 export default function TemplateImporter({

@@ -103,6 +103,11 @@
 }
 
 .comboboxOption {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
   padding: 10px 14px;
   cursor: pointer;
   font-size: 0.875rem;
@@ -115,9 +120,11 @@
   border-bottom: none;
 }
 
-.comboboxOption:hover {
+.comboboxOption:hover,
+.comboboxOption:focus-visible {
   background-color: #ecfdf5;
   color: #065f46;
+  outline: none;
 }
 
 .comboboxOptionSub {

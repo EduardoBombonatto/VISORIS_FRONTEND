@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -180,7 +180,8 @@ export default function ReportWorkspace({
     if (locName) {
       const found = clinics.find(
         (c) =>
-          c.name.toLowerCase() === locName.toLowerCase() || c.id === matchedAppointment?.clinicId,
+          c.name.toLowerCase() === locName.toLowerCase() ||
+          (locName === matchedAppointment?.clinicName && c.id === matchedAppointment?.clinicId),
       );
       if (found) {
         return {
@@ -190,20 +191,28 @@ export default function ReportWorkspace({
           address: found.address || null,
         };
       }
-    }
-
-    if (clinics.length > 0) {
-      const first = clinics[0];
       return {
-        name: first.name,
-        cnpj: first.cnpj || null,
-        phone: first.phone || null,
-        address: first.address || null,
+        name: locName,
+        cnpj: null,
+        phone: null,
+        address: null,
       };
     }
 
+    if (matchedAppointment?.clinicId) {
+      const foundById = clinics.find((c) => c.id === matchedAppointment.clinicId);
+      if (foundById) {
+        return {
+          name: foundById.name,
+          cnpj: foundById.cnpj || null,
+          phone: foundById.phone || null,
+          address: foundById.address || null,
+        };
+      }
+    }
+
     return {
-      name: attendanceLocationName || 'Clínica Veterinária',
+      name: 'Local não informado',
       cnpj: null,
       phone: null,
       address: null,
@@ -212,49 +221,54 @@ export default function ReportWorkspace({
 
   const doctorInfo = useMemo<ReportPdfDoctorData>(() => {
     return {
-      name: currentUser?.fullName || 'Dr. Eduardo Bombonatto',
-      professionalDocument: currentUser?.professionalDocument || 'CRMV-PR 12345',
-      specialty: 'Especialista em Endoscopia e Imagem Veterinária',
+      name: currentUser?.fullName || '',
+      professionalDocument: currentUser?.professionalDocument || null,
+      specialty: null,
     };
   }, [currentUser]);
 
   const patientInfo = useMemo(() => {
     const bio = (patientSnapshot?.biologicalDetails || {}) as Record<string, unknown>;
     return {
-      name: patientSnapshot?.name || matchedAppointment?.patientName || 'Thor',
-      species: String(bio.species || 'Canino'),
-      breed: String(bio.breed || 'Golden'),
-      gender: String(bio.gender || bio.sex || bio.sexo || 'Macho'),
-      age: String(bio.age || '3 anos'),
-      birthDate: patientSnapshot?.birthDate || '2023-05-12',
-      weight: String(bio.weight || bio.peso || '32.5 kg'),
-      covenant: String(bio.convenio || bio.covenant || 'Particular'),
+      name: patientSnapshot?.name || matchedAppointment?.patientName || '',
+      species: bio.species ? String(bio.species) : null,
+      breed: bio.breed ? String(bio.breed) : null,
+      gender: bio.gender || bio.sex || bio.sexo ? String(bio.gender || bio.sex || bio.sexo) : null,
+      age: bio.age ? String(bio.age) : null,
+      birthDate: patientSnapshot?.birthDate || null,
+      weight: bio.weight || bio.peso ? String(bio.weight || bio.peso) : null,
+      covenant: bio.convenio || bio.covenant ? String(bio.convenio || bio.covenant) : null,
     };
   }, [patientSnapshot, matchedAppointment]);
 
   const appointmentInfo = useMemo(() => {
     return {
-      procedureName: matchedAppointment?.procedureName || 'Endoscopia Respiratória',
-      clientName: matchedAppointment?.clientName || 'Marcos Silva',
+      procedureName: matchedAppointment?.procedureName || null,
+      clientName: matchedAppointment?.clientName || null,
       scheduledAt: matchedAppointment?.scheduledAt || null,
     };
   }, [matchedAppointment]);
 
   const defaultInitialContent = useMemo(() => {
     return buildDefaultReportHtml({
-      procedureName: matchedAppointment?.procedureName || 'Endoscopia Respiratória',
+      procedureName: matchedAppointment?.procedureName || '',
     });
   }, [matchedAppointment]);
 
+  const contentRevisionRef = useRef(0);
   const content = localContent ?? fetchedReport?.content ?? defaultInitialContent;
 
   const isSigned = Boolean(signedAt);
   const isSavingDraft = createReportMutation.isPending || updateReportMutation.isPending;
   const isSigning = signReportMutation.isPending;
+  const isEditorLocked = isSigned || isSavingDraft || isSigning;
 
-  const applyReportUpdate = (updated: ReportResponse) => {
+  const applyReportUpdate = (updated: ReportResponse, expectedRevision?: number) => {
     setReportId(updated.id);
-    setContent(updated.content);
+    if (expectedRevision === undefined || contentRevisionRef.current === expectedRevision) {
+      setContent(updated.content);
+      setIsDirty(false);
+    }
     if (Array.isArray(updated.images) && updated.images.length > 0) {
       setImages(sortImagesByDisplayOrder(updated.images));
     }
@@ -265,12 +279,12 @@ export default function ReportWorkspace({
     if (updated.patientSnapshot !== undefined) {
       setPatientSnapshot((updated.patientSnapshot as ReportPatientSnapshot | null) ?? null);
     }
-    setIsDirty(false);
   };
 
   const ensureDraftReport = async (): Promise<string> => {
     if (reportId) return reportId;
 
+    const revisionAtStart = contentRevisionRef.current;
     const response = await createReportMutation.mutateAsync({
       data: {
         appointment_id: appointmentId,
@@ -283,7 +297,7 @@ export default function ReportWorkspace({
       throw new Error('Não foi possível inicializar o rascunho do laudo.');
     }
 
-    applyReportUpdate(created);
+    applyReportUpdate(created, revisionAtStart);
     await queryClient.invalidateQueries({
       queryKey: getListAppointmentsQueryKey(),
     });
@@ -291,8 +305,9 @@ export default function ReportWorkspace({
   };
 
   const handleSaveDraft = async () => {
-    if (isSigned || isSavingDraft) return;
+    if (isEditorLocked) return;
     setFeedbackMessage(null);
+    const revisionAtStart = contentRevisionRef.current;
 
     try {
       if (!reportId) {
@@ -303,15 +318,15 @@ export default function ReportWorkspace({
           },
         });
         const created = extractReportFromResponse(response);
-        if (created) applyReportUpdate(created);
+        if (created) applyReportUpdate(created, revisionAtStart);
       } else {
         const response = await updateReportMutation.mutateAsync({
           id: reportId,
           data: { content },
         });
         const updated = extractReportFromResponse(response);
-        if (updated) applyReportUpdate(updated);
-        else setIsDirty(false);
+        if (updated) applyReportUpdate(updated, revisionAtStart);
+        else if (contentRevisionRef.current === revisionAtStart) setIsDirty(false);
       }
 
       await queryClient.invalidateQueries({
@@ -341,7 +356,8 @@ export default function ReportWorkspace({
   };
 
   const handleImportTemplate = (htmlContent: string, templateTitle: string) => {
-    if (isSigned) return;
+    if (isEditorLocked) return;
+    contentRevisionRef.current += 1;
     setContent(htmlContent);
     setIsDirty(true);
     setFeedbackMessage({
@@ -386,7 +402,7 @@ export default function ReportWorkspace({
   };
 
   const handleInsertImageToEditor = (image: ReportImageResponse, label: string) => {
-    if (isSigned) return;
+    if (isEditorLocked) return;
     const captionText = image.caption?.trim() ?? '';
     const captionLabel = captionText ? `${label} — ${captionText}` : label;
     const safeUrl = escapeHtml(image.imageUrl);
@@ -394,6 +410,7 @@ export default function ReportWorkspace({
     const safeCaption = escapeHtml(captionText);
     const safeCaptionLabel = escapeHtml(captionLabel);
     const figureHtml = `<figure class="report-figure" data-report-image="true" data-src="${safeUrl}" data-alt="${safeLabel}" data-caption="${safeCaption}"><img src="${safeUrl}" alt="${safeCaptionLabel}" class="report-figure-img" /><figcaption class="report-figure-caption">${safeCaptionLabel}</figcaption></figure>`;
+    contentRevisionRef.current += 1;
     setContent(`${content}${figureHtml}`);
     setIsDirty(true);
     setFeedbackMessage({
@@ -403,8 +420,9 @@ export default function ReportWorkspace({
   };
 
   const handleConfirmSign = async () => {
-    if (isSigned || isSigning) return;
+    if (isSigned || isSigning || isSavingDraft) return;
     setFeedbackMessage(null);
+    const revisionAtStart = contentRevisionRef.current;
 
     try {
       let targetReportId = reportId;
@@ -415,7 +433,9 @@ export default function ReportWorkspace({
           id: targetReportId,
           data: { content },
         });
-        setIsDirty(false);
+        if (contentRevisionRef.current === revisionAtStart) {
+          setIsDirty(false);
+        }
       }
 
       const response = await signReportMutation.mutateAsync({
@@ -424,7 +444,7 @@ export default function ReportWorkspace({
       const signedReport = extractReportFromResponse(response);
 
       if (signedReport) {
-        applyReportUpdate(signedReport);
+        applyReportUpdate(signedReport, revisionAtStart);
         if (!signedReport.signedAt) {
           setSignedAt(new Date().toISOString());
         }
@@ -575,7 +595,7 @@ export default function ReportWorkspace({
         <ReportImageManager
           appointmentId={appointmentId}
           images={images}
-          disabled={isSigned}
+          disabled={isEditorLocked}
           isAdding={isSavingDraft}
           onAddImage={handleAddImage}
           onReorderImages={handleReorderImages}
@@ -589,7 +609,7 @@ export default function ReportWorkspace({
           <div className={styles.editorHeader}>
             <TemplateImporter
               currentContent={content}
-              disabled={isSigned}
+              disabled={isEditorLocked}
               onImportContent={handleImportTemplate}
             />
 
@@ -605,13 +625,14 @@ export default function ReportWorkspace({
           <div className={styles.editorBody}>
             <RichTextEditor
               value={content}
-              editable={!isSigned}
+              editable={!isEditorLocked}
               headerSlot={editorHeaderSlot}
               footerSlot={editorFooterSlot}
               onChange={(newHtml) => {
                 if (newHtml === content || (content === '' && newHtml === '<p></p>')) {
                   return;
                 }
+                contentRevisionRef.current += 1;
                 setContent(newHtml);
                 setIsDirty(true);
               }}

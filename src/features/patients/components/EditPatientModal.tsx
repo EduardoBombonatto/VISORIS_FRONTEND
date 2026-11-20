@@ -96,7 +96,7 @@ export function EditPatientModal({
       let birthDateToSend = data.birthDate;
       if (!birthDateToSend && data.age) {
         const match = data.age.match(/\d+/);
-        const years = match ? parseInt(match[0], 10) : 1;
+        const years = match ? Number.parseInt(match[0], 10) : 1;
         const estimatedDate = new Date();
         estimatedDate.setFullYear(estimatedDate.getFullYear() - years);
         birthDateToSend = estimatedDate.toISOString().split('T')[0];

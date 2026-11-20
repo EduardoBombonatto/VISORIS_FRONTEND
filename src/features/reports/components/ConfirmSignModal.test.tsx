@@ -28,20 +28,34 @@ describe('ConfirmSignModal', () => {
     ).toBeInTheDocument();
   });
 
-  it('permite alternar itens do checklist e chamar onConfirm e onCancel', () => {
+  it('inicia com itens desmarcados, bloqueia confirmação até marcar todos e reseta ao reabrir', () => {
     const handleConfirm = vi.fn();
     const handleCancel = vi.fn();
 
-    render(<ConfirmSignModal isOpen={true} onConfirm={handleConfirm} onCancel={handleCancel} />);
+    const { rerender } = render(
+      <ConfirmSignModal isOpen={true} onConfirm={handleConfirm} onCancel={handleCancel} />,
+    );
 
     const checkboxes = screen.getAllByRole('checkbox');
     expect(checkboxes.length).toBe(8);
+    checkboxes.forEach((cb) => expect(cb).not.toBeChecked());
 
-    fireEvent.click(checkboxes[0]);
-    expect(checkboxes[0]).not.toBeChecked();
+    const confirmBtn = screen.getByRole('button', { name: /confirmar e assinar/i });
+    expect(confirmBtn).toBeDisabled();
 
-    fireEvent.click(screen.getByRole('button', { name: /confirmar e assinar/i }));
+    checkboxes.forEach((cb) => fireEvent.click(cb));
+    checkboxes.forEach((cb) => expect(cb).toBeChecked());
+    expect(confirmBtn).toBeEnabled();
+
+    fireEvent.click(confirmBtn);
     expect(handleConfirm).toHaveBeenCalledTimes(1);
+
+    rerender(<ConfirmSignModal isOpen={false} onConfirm={handleConfirm} onCancel={handleCancel} />);
+    rerender(<ConfirmSignModal isOpen={true} onConfirm={handleConfirm} onCancel={handleCancel} />);
+
+    const reopenedCheckboxes = screen.getAllByRole('checkbox');
+    reopenedCheckboxes.forEach((cb) => expect(cb).not.toBeChecked());
+    expect(screen.getByRole('button', { name: /confirmar e assinar/i })).toBeDisabled();
 
     fireEvent.click(screen.getByRole('button', { name: /cancelar/i }));
     expect(handleCancel).toHaveBeenCalledTimes(1);

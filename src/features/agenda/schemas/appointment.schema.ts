@@ -12,14 +12,26 @@ export const createAppointmentSchema = z.object({
   price: z
     .union([z.string(), z.number()])
     .optional()
-    .transform((val) => {
-      if (val === undefined || val === null || val === '') return undefined;
+    .transform((val, ctx) => {
+      if (val === undefined || val === null) return undefined;
+      if (typeof val === 'string' && val.trim() === '') return undefined;
       const num =
-        typeof val === 'number' ? val : Number(val.toString().replace(/\./g, '').replace(',', '.'));
-      return isNaN(num) ? undefined : num;
-    })
-    .refine((val) => val === undefined || val >= 0, {
-      message: 'O valor não pode ser negativo',
+        typeof val === 'number' ? val : Number(val.trim().replace(/\./g, '').replace(',', '.'));
+      if (!Number.isFinite(num)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Informe um valor numérico válido',
+        });
+        return z.NEVER;
+      }
+      if (num < 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'O valor não pode ser negativo',
+        });
+        return z.NEVER;
+      }
+      return num;
     }),
   payment_status: z.enum(['UNPAID', 'PAID', 'INSURANCE']).default('UNPAID'),
 });

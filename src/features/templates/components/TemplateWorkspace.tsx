@@ -250,12 +250,18 @@ export default function TemplateWorkspace({
 
   // Auto-seleciona o primeiro template para o preview caso nada tenha sido selecionado
   useEffect(() => {
-    if (!initialAutoSelectRef.current && !isCreatingNew && !selectedId && templates.length > 0) {
+    if (
+      !initialAutoSelectRef.current &&
+      !isCreatingNew &&
+      !isCreating &&
+      !selectedId &&
+      templates.length > 0
+    ) {
       initialAutoSelectRef.current = true;
       setSelectedId(templates[0].id);
       setIsCreating(false);
     }
-  }, [templates, selectedId, isCreatingNew]);
+  }, [templates, selectedId, isCreatingNew, isCreating]);
 
   // Template atualmente selecionado
   const selectedTemplate = useMemo(() => {

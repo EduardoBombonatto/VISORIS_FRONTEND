@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Copia os arquivos de lock para instalar dependências exatas
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci --ignore-scripts
 
 # ==========================================
 # Estágio 2: Builder

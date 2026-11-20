@@ -176,29 +176,28 @@ export function ReportPdfHeader({
   appointment,
   patientName,
 }: ReportPdfHeaderProps) {
-  const doctorName = doctor?.name?.trim() || 'Dr. Eduardo Bombonatto';
-  const doctorCrmv = doctor?.professionalDocument?.trim() || 'CRMV-PR 12345';
-  const doctorSpecialty =
-    doctor?.specialty?.trim() || 'Especialista em Endoscopia e Imagem Veterinária';
+  const doctorName = doctor?.name?.trim() || 'Médico não informado';
+  const doctorCrmv = doctor?.professionalDocument?.trim() || 'Registro não informado';
+  const doctorSpecialty = doctor?.specialty?.trim() || '';
 
-  const clinicName = clinic?.name?.trim() || 'Hospital Animal Care';
+  const clinicName = clinic?.name?.trim() || 'Local não informado';
   const clinicLocation =
-    clinic?.address?.trim() ||
-    [clinic?.phone, clinic?.cnpj].filter(Boolean).join(' • ') ||
-    'Cascavel, PR';
+    clinic?.address?.trim() || [clinic?.phone, clinic?.cnpj].filter(Boolean).join(' • ') || '';
 
-  const finalPatientName = patient?.name?.trim() || patientName?.trim() || 'Thor';
-  const patientSpecies = patient?.species?.trim() || 'Canino';
+  const finalPatientName = patient?.name?.trim() || patientName?.trim() || 'Paciente não informado';
+  const patientSpecies = patient?.species?.trim() || 'Não informada';
   const patientBreed = patient?.breed?.trim() || 'Não informada';
   const patientAge = patient?.age?.trim() || 'Não informada';
   const patientBirth = patient?.birthDate ? formatShortDate(patient.birthDate) : '';
-  const patientGender = patient?.gender?.trim() || 'Macho';
+  const patientGender = patient?.gender?.trim() || 'Não informado';
   const patientWeight = patient?.weight?.trim() || '';
-  const patientCovenant = patient?.covenant?.trim() || 'Particular';
+  const patientCovenant = patient?.covenant?.trim() || 'Não informado';
 
-  const tutorName = appointment?.clientName?.trim() || 'Tutor Responsável';
-  const examDate = formatExamDateLong(appointment?.scheduledAt);
-  const procedureName = appointment?.procedureName?.trim() || 'Endoscopia Respiratória';
+  const tutorName = appointment?.clientName?.trim() || 'Não informado';
+  const examDate = appointment?.scheduledAt
+    ? formatExamDateLong(appointment.scheduledAt)
+    : 'Data não informada';
+  const procedureName = appointment?.procedureName?.trim() || 'Procedimento não informado';
 
   return (
     <>
@@ -215,7 +214,9 @@ export function ReportPdfHeader({
                 <div className={styles.clinicBox}>
                   <div className={styles.clinicLabel}>Local do Exame</div>
                   <div className={styles.clinicName}>{clinicName}</div>
-                  <div className={styles.clinicLocation}>{clinicLocation}</div>
+                  {clinicLocation ? (
+                    <div className={styles.clinicLocation}>{clinicLocation}</div>
+                  ) : null}
                 </div>
               </td>
             </tr>
@@ -280,11 +281,11 @@ export function ReportPdfContinuationHeader({
   totalPages,
   patientName,
 }: ReportPdfContinuationHeaderProps) {
-  const doctorName = doctor?.name?.trim() || 'Dr. Eduardo Bombonatto';
-  const doctorCrmv = doctor?.professionalDocument?.trim() || 'CRMV-PR 12345';
-  const clinicName = clinic?.name?.trim() || 'Hospital Animal Care';
-  const finalPatientName = patient?.name?.trim() || patientName?.trim() || 'Paciente';
-  const procedureName = appointment?.procedureName?.trim() || 'Endoscopia';
+  const doctorName = doctor?.name?.trim() || 'Médico não informado';
+  const doctorCrmv = doctor?.professionalDocument?.trim() || 'Registro não informado';
+  const clinicName = clinic?.name?.trim() || 'Local não informado';
+  const finalPatientName = patient?.name?.trim() || patientName?.trim() || 'Paciente não informado';
+  const procedureName = appointment?.procedureName?.trim() || 'Procedimento';
 
   return (
     <div className={styles.continuationHeader}>
@@ -319,8 +320,8 @@ export function ReportPdfFooter({
   reportId = null,
   appointmentScheduledAt = null,
 }: ReportPdfFooterProps) {
-  const doctorName = doctor?.name?.trim() || 'Dr. Eduardo Bombonatto';
-  const doctorCrmv = doctor?.professionalDocument?.trim() || 'CRMV-PR 12345';
+  const doctorName = doctor?.name?.trim() || 'Médico não informado';
+  const doctorCrmv = doctor?.professionalDocument?.trim() || 'Registro não informado';
   const hash = generateAuthenticityHash(reportId, appointmentScheduledAt || signedAt);
 
   return (

@@ -4,10 +4,15 @@
   margin: -24px;
   width: calc(100% + 48px);
   height: calc(100vh - 64px);
-  height: calc(100dvh - 64px);
   background-color: #f9fafb; /* gray-50 */
   overflow: hidden;
   container-type: inline-size;
+}
+
+@supports (height: 100dvh) {
+  .pageContainer {
+    height: calc(100dvh - 64px);
+  }
 }
 
 .workspace {

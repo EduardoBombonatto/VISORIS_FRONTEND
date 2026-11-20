@@ -23,9 +23,17 @@ export default function ConfirmSignModal({
   onConfirm,
   onCancel,
 }: ConfirmSignModalProps) {
-  const [checkedIndices, setCheckedIndices] = useState<number[]>(() =>
-    CHECKLIST_ITEMS.map((_, i) => i),
-  );
+  const [checkedIndices, setCheckedIndices] = useState<number[]>([]);
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
+    if (isOpen) {
+      setCheckedIndices([]);
+    }
+  }
+
+  const allChecked = checkedIndices.length === CHECKLIST_ITEMS.length;
 
   const toggleItem = (index: number) => {
     setCheckedIndices((prev) =>
@@ -100,7 +108,7 @@ export default function ConfirmSignModal({
             type="button"
             className={styles.btnConfirmSign}
             onClick={onConfirm}
-            disabled={isSigning}
+            disabled={isSigning || !allChecked}
           >
             {isSigning ? 'Assinando...' : 'Confirmar e Assinar'}
           </button>

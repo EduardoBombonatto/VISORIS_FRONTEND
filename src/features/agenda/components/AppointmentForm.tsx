@@ -214,7 +214,7 @@ export function AppointmentForm({ onSuccess, onCancel, initialDate }: Appointmen
 
       {/* 2. Seleção de Tutor / Responsável (Combobox com busca textual) */}
       <div className={styles.formGroup}>
-        <label className={styles.label}>
+        <label className={styles.label} htmlFor="client_search">
           Tutor / Cliente <span className={styles.required}>*</span>
         </label>
 
@@ -240,6 +240,7 @@ export function AppointmentForm({ onSuccess, onCancel, initialDate }: Appointmen
         ) : (
           <div className={styles.comboboxWrapper}>
             <input
+              id="client_search"
               type="text"
               className={styles.comboboxInput}
               placeholder="Digite o nome ou CPF do tutor para buscar..."
@@ -260,18 +261,19 @@ export function AppointmentForm({ onSuccess, onCancel, initialDate }: Appointmen
                   </div>
                 ) : (
                   filteredClients.map((c) => (
-                    <div
+                    <button
+                      type="button"
                       key={c.id}
                       className={styles.comboboxOption}
                       onClick={() => handleSelectClient(c)}
                     >
-                      <div>
+                      <span>
                         <strong>{c.fullName}</strong>
-                      </div>
+                      </span>
                       {c.documentCpf && (
                         <span className={styles.comboboxOptionSub}>CPF: {c.documentCpf}</span>
                       )}
-                    </div>
+                    </button>
                   ))
                 )}
               </div>

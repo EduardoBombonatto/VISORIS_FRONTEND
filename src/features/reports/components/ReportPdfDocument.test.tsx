@@ -116,6 +116,9 @@ describe('ReportPdfDocument', () => {
         patient={{
           name: 'Thor',
         }}
+        appointment={{
+          procedureName: 'Endoscopia',
+        }}
         content={multiPageContent}
       />,
     );

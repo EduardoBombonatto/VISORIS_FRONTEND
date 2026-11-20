@@ -114,4 +114,25 @@ describe('TemplateImporter Component', () => {
       'Endoscopia Digestiva Alta - Normal',
     );
   });
+
+  it('solicita confirmação quando o editor possui imagem sem texto', async () => {
+    const onImport = vi.fn();
+    renderWithClient(
+      <TemplateImporter
+        currentContent='<p><img src="https://example.com/exam.jpg"></p>'
+        onImportContent={onImport}
+      />,
+    );
+
+    const select = screen.getByRole('combobox', { name: /importar template/i });
+    fireEvent.change(select, { target: { value: 't1' } });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('dialog', { name: /substituir conteúdo do laudo/i }),
+      ).toBeInTheDocument();
+    });
+
+    expect(onImport).not.toHaveBeenCalled();
+  });
 });
